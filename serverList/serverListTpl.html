@@ -1,0 +1,23 @@
+<md-content class="md-padding" layout="row" layout-wrap>
+  <div id="server-search" flex="100" layout="row" layout-align="end">
+    <p ng-show="!showServerSearch" ng-click="showServerSearch = !showServerSearch">SEARCH</P>
+    <md-input-container ng-show="showServerSearch" flex="25">
+      <label>Search Servers...</label>
+      <input ng-model="s">
+    </md-input-container>
+    <span ng-show="showServerSearch" ng-click="showServerSearch = !showServerSearch; s = ''">&#10005;</span>
+  </div>
+  <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'status' | filter:s as results">
+  	<md-card class="server-status-card" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+    		<md-card-content>
+          <div class="server-status-img" 
+               ng-class="{'status-ok': true, 'status-warn': server.status == 2, 'status-err': server.status == 1}">
+          </div>
+      		<h3 class="server-host">{{server.status}}</h3>
+          <h3 class="server-roles">{{server.ip}}</h3>
+          <hr/>
+          <h3 class="server-roles" ng-repeat="role in server.roles">{{role}}</h3>
+    		</md-card-content>
+    </md-card>
+  </div>
+</md-content>

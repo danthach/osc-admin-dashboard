@@ -1,0 +1,21 @@
+<md-dialog aria-label="Task Status">
+  <form>
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Status of "{{thisTask.id}}" Task</h2>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <md-card>
+      <md-card-content>
+          {{thisTask.error}}
+      </md-card-content>
+    </md-card>
+  </md-dialog-content>
+  <div class="md-actions" layout="row">
+    <md-button ng-click="closeTaskDetails()" class="md-primary">
+     DISMISS
+    </md-button>
+  </div>
+  </form>
+</md-dialog>

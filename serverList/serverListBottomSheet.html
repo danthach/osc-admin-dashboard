@@ -1,0 +1,158 @@
+<md-bottom-sheet class="md-list md-has-header server-list-bottom-sheet">
+	<div class="container" layout="row" layout-wrap>
+		<div flex="100">
+			<p class="close-btn" ng-click="closeBottomSheet()">CLOSE</p>
+		</div>
+		<div class="server-detail-info" flex="100">
+			<h2>{{server.name}}</h2>
+			<p>
+				IP Address: &nbsp;<span>{{server.ip}}</span>
+				Uptime: &nbsp;<span>{{server.uptime}}</span>
+				Hostname: &nbsp;<span>{{server.host}}</span>
+				Roles: &nbsp;<span>{{server.roles}}</span>
+				Disk Usage: &nbsp;<span>{{server.diskUsage}}</span>
+			</p>
+		</div>
+		<div flex="100">
+		  <md-content id="modules-tabs" class="md-padding">
+		    <md-tabs md-dynamic-height md-border-bottom>
+		      <md-tab label="modules">
+		      	<md-content layout="row" layout-wrap>
+			      	<div flex="20" ng-repeat="module in modules">
+					  	<md-card class="module-status-card" ng-click="showModuleDetails($event, $index)">
+					    	<md-card-content>
+					            <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
+					      		<h3 class="server-host">{{module.moduleName}}</h3>
+					    	</md-card-content>
+					    </md-card>
+					</div>
+				</md-content>
+		      </md-tab>
+		      <md-tab label="executions">
+		      	<md-content layout="row" layout-wrap>
+		      		<div flex="33">
+					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+					    	<md-card-content layout="column">
+					    		<div class="exec-card-header" flex>
+					            	<h2>EXECUTIONS</h2>
+					            	<p ng-show="!showExecSearch" ng-click="showExecSearch = !showExecSearch">SEARCH</P>
+					            	<span ng-show="showExecSearch" ng-click="showExecSearch = !showExecSearch; e = ''">&#10005;</span>
+					            </div>
+					            <div class="exec-search-box" ng-show="showExecSearch" flex>
+					            	<md-input-container flex>
+							          <label>Search Executions...</label>
+							          <input ng-model="e">
+							        </md-input-container>
+					            </div>
+						         <table class="table table-hover clickable-table table-top-margin">
+						          	<tr ng-repeat="exec in server.executions | filter:e as results" ng-click="selectExecution($index)">
+						          		<td>{{exec.execId}}</td>
+						          		<td>{{exec.status}}</td>
+						          	</tr>
+						        </table>
+					    	</md-card-content>
+					    </md-card>
+					</div>
+			        <div flex="33">
+					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+					    	<md-card-content layout="column">
+					    		<div class="exec-card-header" flex>
+					            	<h2>STEPS</h2>
+					            	<p ng-show="!showStepSearch && thisExecution.steps" ng-click="showStepSearch = !showStepSearch">SEARCH</P>
+					            	<span ng-show="showStepSearch" ng-click="showStepSearch = !showStepSearch; s = ''">&#10005;</span>
+					            </div>
+					            <div class="exec-search-box" ng-show="showStepSearch" flex>
+					            	<md-input-container flex>
+							          <label>Search Steps...</label>
+							          <input ng-model="s">
+							        </md-input-container>
+					            </div>
+						         <table class="table table-hover clickable-table table-top-margin">
+						          	<tr ng-repeat="step in thisExecution.steps | filter:s as results" ng-click="selectStep($index)">
+						          		<td>{{step.label}}</td>
+						          		<td>{{step.status}}</td>
+						          	</tr>
+						          	<tr ng-show="!thisExecution.steps">
+						          		<td>Select an Execution...</td>
+						          	</tr>
+						        </table>
+					    	</md-card-content>
+					    </md-card>
+					</div>
+					<div flex="33">
+					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+					    	<md-card-content layout="column">
+					    		<div class="exec-card-header" flex>
+					            	<h2>TASKS</h2>
+					            	<p ng-show="!showTaskSearch && thisStep.tasks" ng-click="showTaskSearch = !showTaskSearch">SEARCH</P>
+					            	<span ng-show="showTaskSearch" ng-click="showTaskSearch = !showTaskSearch; t = ''">&#10005;</span>
+					            </div>
+					            <div class="exec-search-box" ng-show="showTaskSearch" flex>
+					            	<md-input-container flex>
+							          <label>Search Tasks...</label>
+							          <input ng-model="t">
+							        </md-input-container>
+					            </div>
+						         <table class="table table-hover clickable-table table-top-margin">
+						          	<tr ng-repeat="task in thisStep.tasks | filter:t as results" ng-click="showTaskDetails($event, $index)">  
+						          		<td>{{task.id}}</td>
+						          		<td>{{task.status}}</td>
+						          		<td class="button-cell">
+						          			<button class="md-raised md-button md-default-theme" ng-click="killTask($event, $index)" flex>
+								    			<span class="ng-scope">KILL</span>
+								    			<div class="md-ripple-container"></div>
+								    		</button>
+								    		<button class="md-raised md-button md-default-theme" ng-click="forceTask($event, $index)" flex>
+								    			<span class="ng-scope">FORCE</span>
+								    			<div class="md-ripple-container"></div>
+								    		</button>
+								    	</td>
+						          	</tr>
+						          	<tr ng-show="!thisStep.tasks">
+						          		<td>Select a Step...</td>
+						          	</tr>
+						        </table>
+					    	</md-card-content>
+					    </md-card>
+					</div>
+					<div flex="100">
+					  	<md-card>
+					    	<md-card-content id="module-action-card" layout="row">
+					    		<button class="md-raised md-primary md-button md-default-theme" flex>
+					    			<span class="ng-scope">SETTINGS</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    		<button class="md-raised md-primary md-button md-default-theme" flex>
+					    			<span class="ng-scope">FILES</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    		<button class="md-raised md-button md-default-theme" flex>
+					    			<span class="ng-scope">KILL</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    		<button class="md-raised md-button md-default-theme" flex>
+					    			<span class="ng-scope">FORCE</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    		<button class="md-raised md-button md-default-theme" flex>
+					    			<span class="ng-scope">RETRY</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    		<button class="md-raised md-button md-default-theme" flex>
+					    			<span class="ng-scope">PAUSE</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    		<button class="md-raised md-button md-default-theme" flex>
+					    			<span class="ng-scope">RESUME</span>
+					    			<div class="md-ripple-container"></div>
+					    		</button>
+					    	</md-card-content>
+					    </md-card>
+					</div>
+			    </md-content>    
+		      </md-tab>
+		    </md-tabs>
+		  </md-content>
+		</div>
+	</div>
+</md-bottom-sheet>

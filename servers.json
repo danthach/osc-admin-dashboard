@@ -1,0 +1,37 @@
+[
+	{
+		"DNSName": "redevfms1.amsoscar.com",
+		"roles": "Full Stack",
+		"ip": "23.21.88.16"
+	},
+	{
+		"DNSName": "devfms.amsoscar.com",
+		"roles": "Full Stack",
+		"ip": "54.243.144.165"
+	},
+	{
+		"DNSName": "devfms508.amsoscar.com",
+		"roles": "Full Stack",
+		"ip": "174.129.223.67"
+	},
+	{
+		"DNSName": "qafms.amsoscar.com",
+		"roles": "Full Stack",
+		"ip": "54.221.239.58"
+	},
+	{
+		"DNSName": "uatfms.amsoscar.com",
+		"roles": "Clipping",
+		"ip": "54.221.196.92"
+	},
+	{
+		"DNSName": "uatfms2.amsoscar.com",
+		"roles": "Full Stack",
+		"ip": "54.197.239.247"
+	},
+	{
+		"DNSName": "uatfms3.amsoscar.com",
+		"roles": "Full Stack",
+		"ip": "54.204.6.195"
+	}
+]
