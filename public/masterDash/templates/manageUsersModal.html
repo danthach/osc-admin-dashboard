@@ -1,0 +1,84 @@
+<md-dialog id="manage-users" class="exec-list" aria-label="Manage Users">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Manage Users</h2>
+    </div>
+  </md-toolbar>
+  <md-dialog-content layout="row" layout-wrap>
+    <div flex="100" layout="row" layout-align="end">
+      <md-button ng-click="showNewUserForm = true" ng-show="!showNewUserForm" class="md-raised md-primary">
+        <i class="material-icons">&#xE148;</i>
+        ADD USER
+      </md-button>
+    </div>
+    <div ng-show="showNewUserForm" flex="100">
+      <md-card>
+        <md-card-content>
+          <div flex="100" layout="row" layout-align="end">
+            <span class="material-icons"
+              ng-click="showNewUserForm = false">
+              &#xE888;
+            </span>
+          </div>
+          <form name="newUserForm" ng-submit="newUserForm.$valid && createUser(newUser)">
+            <md-input-container id="new-user-email-input" flex>
+              <label>New User's Email</label>
+              <input ng-model="newUser.email" type="email" required>
+            </md-input-container>
+            <md-input-container id="new-user-email-input" flex>
+              <label>Temporary Password</label>
+              <input ng-model="newUser.password" type="password" required>
+            </md-input-container>
+              <label>Admin Privelages?:</label>
+              <input type="radio" ng-model="newUser.admin" ng-value="true">Yes
+              <input type="radio" ng-model="newUser.admin" ng-value="false" ng-init="newUser.admin = false">No
+            <p class="form-fail-msg" ng-show="userAlreadyExists">A user with this email address already exists.</p>
+            <div flex="100" layout="row" layout-align="end">
+              <md-button type="submit" class="md-raised md-primary">
+                <i class="material-icons">&#xE876;</i>
+               Create User
+              </md-button>
+            </div>
+          </form>
+        </md-card-content>
+      </md-card>
+    </div>
+    <div class="exec-card-header" flex="100">
+      <hr/>
+      <h2>USERS</h2>
+      <!-- <p ng-show="!showUsersSearch" ng-click="showUsersSearch = true">
+        <i class="material-icons">&#xE8B6;</i>
+        SEARCH
+      </p>
+      <span class="material-icons" 
+          ng-show="showUsersSearch" 
+          ng-click="showUsersSearch = false; u = ''">
+        &#xE888;
+      </span>
+    </div>
+    <div class="exec-search-box" ng-show="showUsersSearch" flex="100">
+      <md-input-container flex>
+      <label>Search Users...</label>
+      <input ng-model="u">
+    </md-input-container>
+    </div> -->
+    <table class="table table-hover clickable-table table-top-margin users-table" flex="100">
+        <tr ng-repeat="user in users | filter:u as results" ng-click="showTaskDetails($event, $index)">  
+          <td>{{user.username}}</td>
+          <td ng-if="user.admin">ADMIN</td>
+          <td ng-if="!user.admin"></td>
+          <td class="button-cell">
+            <button class="md-raised md-button md-default-theme" ng-click="deleteUser($event, user._id)" flex>
+              <span class="ng-scope">DELETE</span>
+              <div class="md-ripple-container"></div>
+            </button>
+          </td>
+        </tr>
+    </table>
+  </md-dialog-content>
+  <div class="md-actions" layout="row">
+    <md-button ng-click="close()" class="md-primary">
+     DISMISS
+    </md-button>
+  </div>
+</md-dialog>

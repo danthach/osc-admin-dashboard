@@ -1,0 +1,27 @@
+<div class="opaque-backdrop"></div>
+<md-dialog id="manage-users" class="exec-list" aria-label="Manage Users">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>Please Log In</h2>
+    </div>
+  </md-toolbar>
+  <md-dialog-content layout="row" layout-wrap>
+    <form name="loginForm" ng-submit="loginForm.$valid && login(user)" flex>
+      <md-input-container id="login-email-input" flex="100">
+        <label>Email</label>
+        <input ng-model="user.username" name="username" type="email" required>
+      </md-input-container>
+      <md-input-container id="login-password-input" flex="100">
+        <label>Password</label>
+        <input type="password" ng-model="user.password" required>
+      </md-input-container>
+      <p class="form-fail-msg" ng-show="failedLogin">Invalid Credentials</p>
+      <div flex="100" layout="row" layout-align="end">
+        <md-button type="submit" class="md-raised md-primary">
+          <i class="material-icons">&#xE876;</i>
+         Log In
+        </md-button>
+      </div>
+    </form>
+  </md-dialog-content>
+</md-dialog>

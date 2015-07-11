@@ -1,0 +1,30 @@
+<md-dialog id="my-profile" aria-label="My Profile">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>My Profile</h2>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <form name="changePWForm" ng-submit="changePWForm.$valid && saveMyProfile(pw)" flex>
+      <p><span>Email: </span>{{user.username}}<p>
+      <h4>Change Password</h4>
+      <md-input-container flex id="first-pw">
+        <label>Choose Password</label>
+        <input type="password" ng-model="pw.first" required>
+      </md-input-container>
+      <md-input-container flex>
+        <label>Confirm Password</label>
+        <input type="password" ng-model="pw.second" required>
+      </md-input-container>
+      <p ng-show="!passwordsMatch" class="form-error-msg" flex>Passwords Don't Match</p>
+      <div flex="100" layout="row" layout-align="end">
+        <md-button type="submit" class="md-raised md-primary">
+         SAVE
+        </md-button>
+        <md-button ng-click="close()">
+         CANCEL
+        </md-button>
+      </div>
+    </form>
+  </md-dialog-content>
+</md-dialog>
