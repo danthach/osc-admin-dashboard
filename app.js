@@ -17,16 +17,17 @@ var app = express();
 /*
 Database and Models
 */
-mongoose.connect( "mongodb://heroku_ll7lq7jp:406uvnqqm2ma11kildcf4lgln7@ds047682.mongolab.com:47682/heroku_ll7lq7jp" || "mongodb://localhost/oscDashDb");
+mongoose.connect( process.env.MONGOLAB_URI || "mongodb://localhost/oscDashDb");
 var UserSchema = new mongoose.Schema({
     username: String,
     salt: String,
     hash: String,
     admin: Boolean
 });
-function dummyFunction() {
-  // Adding something to force a rebuild - looks like we have a caching problem on the heroku server
-};
+mongodb://heroku_ll7lq7jp:406uvnqqm2ma11kildcf4lgln7@ds047682.mongolab.com:47682/heroku_ll7lq7jp
+ds047682.mongolab.com:47682/heroku_ll7lq7jp
+heroku_ll7lq7jp
+406uvnqqm2ma11kildcf4lgln7
 
 var User = mongoose.model('users', UserSchema);
 /*
@@ -244,4 +245,4 @@ app.get('/logout', function (req, res) {
 });
 
 
-http.createServer(app).listen(3000);
+http.createServer(app).listen(process.env.PORT || 3000);
