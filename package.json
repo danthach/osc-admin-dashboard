@@ -5,6 +5,9 @@
         "node": "0.8.15",
         "npm": "2.13.0"
     },
+    "scripts": {
+        "start": "node app.js"
+    },
     "dependencies": {
         "express": "^4.10.4",
         "body-parser": "^1.10.0",
