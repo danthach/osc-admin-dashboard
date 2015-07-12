@@ -1,7 +1,12 @@
 <md-dialog id="manage-users" class="exec-list" aria-label="Manage Users">
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>Manage Users</h2>
+      <div flex="50" layout="row" layout-align="start">
+        <h2>Manage Users</h2>
+      </div>
+      <div flex="50" layout="row" layout-align="end">
+        <p class="close-btn material-icons" ng-click="close()">&#xE888;</p>
+      </div>
     </div>
   </md-toolbar>
   <md-dialog-content layout="row" layout-wrap>
@@ -46,22 +51,7 @@
     <div class="exec-card-header" flex="100">
       <hr/>
       <h2>USERS</h2>
-      <!-- <p ng-show="!showUsersSearch" ng-click="showUsersSearch = true">
-        <i class="material-icons">&#xE8B6;</i>
-        SEARCH
-      </p>
-      <span class="material-icons" 
-          ng-show="showUsersSearch" 
-          ng-click="showUsersSearch = false; u = ''">
-        &#xE888;
-      </span>
     </div>
-    <div class="exec-search-box" ng-show="showUsersSearch" flex="100">
-      <md-input-container flex>
-      <label>Search Users...</label>
-      <input ng-model="u">
-    </md-input-container>
-    </div> -->
     <table class="table table-hover clickable-table table-top-margin users-table" flex="100">
         <tr ng-repeat="user in users | filter:u as results" ng-click="showTaskDetails($event, $index)">  
           <td>{{user.username}}</td>
@@ -76,9 +66,4 @@
         </tr>
     </table>
   </md-dialog-content>
-  <div class="md-actions" layout="row">
-    <md-button ng-click="close()" class="md-primary">
-     DISMISS
-    </md-button>
-  </div>
 </md-dialog>

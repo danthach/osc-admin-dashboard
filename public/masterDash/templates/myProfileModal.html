@@ -1,7 +1,12 @@
 <md-dialog id="my-profile" aria-label="My Profile">
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>My Profile</h2>
+      <div flex="50" layout="row" layout-align="start">
+        <h2>My Profile</h2>
+      </div>
+      <div flex="50" layout="row" layout-align="end">
+        <p class="close-btn material-icons" ng-click="close()">&#xE888;</p>
+      </div>
     </div>
   </md-toolbar>
   <md-dialog-content>

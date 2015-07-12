@@ -4,11 +4,13 @@ Module Dependencies
 var express = require('express'),
     http = require('http'),
     path = require('path'),
-    mongoose = require('mongoose');
-    bodyParser = require('body-parser');
-    cookieParser = require('cookie-parser');
-    session = require('express-session');
-    hash = require('./public/pass').hash;
+    mongoose = require('mongoose'),
+    bodyParser = require('body-parser'),
+    cookieParser = require('cookie-parser'),
+    uid = require('gen-uid'),
+    session = require('express-session'),
+    crypto = require('crypto');
+    // csrf = require('csurf'),
 
 var app = express();
 
@@ -27,12 +29,31 @@ var User = mongoose.model('users', UserSchema);
 /*
 Middlewares and configurations 
 */
-app.use(bodyParser());
+// var csrfValue = function(req) {
+//   var token = (req.body && req.body._csrf)
+//     || (req.query && req.query._csrf)
+//     || (req.headers['x-csrf-token'])
+//     || (req.headers['x-xsrf-token']);
+//   return token;
+// };
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieParser('oscDashboard'));
-app.use(session());
+app.use(session({
+  genid: function(req) {
+    return uid.token()
+  },
+  secret: 'oscdashsessionsecret',
+  saveUninitialized: true,
+  resave: true
+}))
+// app.use(csrf({value: csrfValue}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res, next) {
+    // res.cookie('XSRF-TOKEN', req.csrfToken());
     var err = req.session.error,
         msg = req.session.success;
     delete req.session.error;
@@ -45,6 +66,7 @@ app.use(function (req, res, next) {
 /*
 Helper Functions
 */
+
 function authenticate(name, pass, fn) {
     if (!module.parent) console.log('authenticating %s:%s', name, pass);
 
@@ -103,6 +125,24 @@ function stripUsers(users){
 
     return safeUsers;
 }
+
+var len = 128;
+var iterations = 12000;
+function hash(pwd, salt, fn) {
+  if (3 == arguments.length) {
+    crypto.pbkdf2(pwd, salt, iterations, len, fn);
+  } else {
+    fn = salt;
+    crypto.randomBytes(len, function(err, salt){
+      if (err) return fn(err);
+      salt = salt.toString('base64');
+      crypto.pbkdf2(pwd, salt, iterations, len, function(err, hash){
+        if (err) return fn(err);
+        fn(null, salt, hash);
+      });
+    });
+  }
+};
 
 /*
 Routes

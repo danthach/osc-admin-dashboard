@@ -184,6 +184,12 @@ i {
 .form-fail-msg {
   color: rgb(244,67,54);
 }
+#manage-users .close-btn, #my-profile .close-btn {
+  color: #fff;
+}
+#manage-users .close-btn:hover, #my-profile .close-btn:hover {
+  cursor: pointer;
+}
 
 
 
