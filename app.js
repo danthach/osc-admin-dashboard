@@ -24,6 +24,9 @@ var UserSchema = new mongoose.Schema({
     hash: String,
     admin: Boolean
 });
+function dummyFunction() {
+  // Adding something to force a rebuild - looks like we have a caching problem on the heroku server
+};
 
 var User = mongoose.model('users', UserSchema);
 /*
