@@ -17,7 +17,7 @@ var app = express();
 /*
 Database and Models
 */
-mongoose.connect("mongodb://localhost/oscDashDb");
+mongoose.connect( "mongodb:jordajm@gmail.com:B1a2y345@ds047682.mongolab.com:47682/heroku_ll7lq7jp" || "mongodb://localhost/oscDashDb");
 var UserSchema = new mongoose.Schema({
     username: String,
     salt: String,
