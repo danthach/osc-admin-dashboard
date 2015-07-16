@@ -8,10 +8,12 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
       HTTPService.get(url, function(data){
         console.log('this user = ', data);
         if(data.user){
+          _this.loggedIn = true;
           _this.user = data.user;
           _this.admin = data.user.admin ? true : false;
           _this.slicedUserEmail = data.user.username.substr(0, data.user.username.indexOf('@'));
         }else{
+          _this.loggedIn = false;
           _this.showLogin();
         }
       });
@@ -19,6 +21,7 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
     this.getUserData();
 
     $scope.$on('loginSuccess', function(event, user) {
+      _this.loggedIn = true;
       _this.user = user;
       _this.admin = user.admin ? true : false;
       _this.slicedUserEmail = user.username.substr(0, user.username.indexOf('@'));
@@ -55,6 +58,7 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
     };
 
     this.logout = function() {
+      this.loggedIn = false;
       var url = '/logout/';
         HTTPService.get(url, function(data){
           _this.showLogin();

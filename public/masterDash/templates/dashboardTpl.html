@@ -13,19 +13,19 @@
               <i class="material-icons">&#xE5CF;</i>
             </md-button>
             <md-menu-content width="4">
-              <md-menu-item>
+              <md-menu-item ng-if="masterCtrl.loggedIn">
                 <md-button ng-click="masterCtrl.showMyProfile($event)">
                   <i class="material-icons nav-menu-icon" md-menu-align-target>&#xE873;</i>
                   &nbsp; My Profile
                 </md-button>
               </md-menu-item>
-              <md-menu-item ng-if="masterCtrl.admin">
+              <md-menu-item ng-if="masterCtrl.admin && masterCtrl.loggedIn">
                 <md-button ng-click="masterCtrl.showManageUsers($event)">
                 <i class="material-icons nav-menu-icon" md-menu-align-target>&#xE7EF;</i>
                   &nbsp; Manage Users
                 </md-button>
               </md-menu-item>
-              <md-menu-item>
+              <md-menu-item ng-if="masterCtrl.loggedIn">
                 <md-button ng-click="masterCtrl.logout()">
                 <i class="material-icons nav-menu-icon" md-menu-align-target>&#xE879;</i>
                   &nbsp; Log Out
@@ -37,5 +37,5 @@
       </div>
     </md-toolbar>
     
-    <server-list></server-list>
+    <server-list ng-if="masterCtrl.loggedIn"></server-list>
 </div>

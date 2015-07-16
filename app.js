@@ -17,7 +17,7 @@ var app = express();
 /*
 Database and Models
 */
-mongoose.connect( process.env.MONGOLAB_URI || "mongodb://localhost/oscDashDb");
+mongoose.connect("mongodb://localhost/oscDashDb");
 var UserSchema = new mongoose.Schema({
     username: String,
     salt: String,
@@ -240,5 +240,21 @@ app.get('/logout', function (req, res) {
     });
 });
 
+app.get('/init', function (req, res) {
+    User.find().exec(function(err, users){
 
-http.createServer(app).listen(process.env.PORT || 3000);
+        if(err) return send(err);
+
+        if(users.length > 0){
+            console.log('ERROR: Init already executed on this DB - you must start over with a new DB if you are unable to log into the app');
+        }else{
+            res.send('<form method="POST" action="/createUser"><input type="text" name="email" placeholder="Admin\'s Email"><input type="text" name="password" placeholder="Admin\'s Password"><input type="radio" name="admin" value="true" checked><input type="submit" value="Submit"></form>');
+        }
+
+    });
+});
+
+
+http.createServer(app).listen(3000);
+
+console.log("Server running at http://localhost:3000/");
