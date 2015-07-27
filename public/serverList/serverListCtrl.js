@@ -1,39 +1,169 @@
 angular.module('ServerList', ['SharedHTTP'])
   .controller('ServerListCtrl', ['$scope', '$mdBottomSheet', 'HTTPService', function($scope, $mdBottomSheet, HTTPService) {
-    
+
     var _this = this;
+    _this.serversArray = [];
+    _this.modulesArray = [];
 
     this.getServerData = function() {
       var url = 'servers.json';
       HTTPService.get(url, function(data){
         _this.allServers = data;
-        console.log('server data = ', data);
       });
     };
     this.getServerData();
 
+    //server calls
+    this.getServer1 = function() {
+      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      HTTPService.get(url, function(data){
+        _this.server1 = data;
+        _this.serversArray.push(_this.server1);
+      });
+    };
+    this.getServer1();
+
+    this.getServer2 = function() {
+      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      HTTPService.get(url, function(data){
+        _this.server2 = data;
+        _this.serversArray.push(_this.server2);
+      });
+    };
+    this.getServer2();
+
+    this.getServer3 = function() {
+      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      HTTPService.get(url, function(data){
+        _this.server3 = data;
+        _this.serversArray.push(_this.server3);
+      });
+    };
+    this.getServer3();
+
+    this.getServer4 = function() {
+      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      HTTPService.get(url, function(data){
+        _this.server4 = data;
+        _this.serversArray.push(_this.server4);
+      });
+    };
+    this.getServer4();
+
+    this.getServer5 = function() {
+      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      HTTPService.get(url, function(data){
+        _this.server5 = data;
+        _this.serversArray.push(_this.server5);
+      });
+    };
+    this.getServer5();
+
+    this.getServer6 = function() {
+      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      HTTPService.get(url, function(data){
+        _this.server6 = data;
+        _this.serversArray.push(_this.server6);
+      });
+    };
+    this.getServer6();
+
+    // module calls
+    this.getOscLogger = function() {
+      var url = 'http://localhost:3300/ping/module/oscLogger/verbose';
+      HTTPService.get(url, function(data){
+        _this.oscLogger = data;
+        _this.modulesArray.push(_this.oscLogger);
+      });
+    };
+    this.getOscLogger();
+
+    this.getWorkflowManager = function() {
+      var url = 'http://localhost:3300/ping/module/workflowManager/verbose';
+      HTTPService.get(url, function(data){
+        _this.workflowManager = data;
+        _this.modulesArray.push(_this.workflowManager);
+      });
+    };
+    this.getWorkflowManager();
+
+    this.getHttpApi = function() {
+      var url = 'http://localhost:3300/ping/module/httpAPI/verbose';
+      HTTPService.get(url, function(data){
+        _this.httpApi = data;
+        _this.modulesArray.push(_this.httpApi);
+      });
+    };
+    this.getHttpApi();
+
+    this.getEncoder= function() {
+      var url = 'http://localhost:3300/ping/module/encoder/verbose';
+      HTTPService.get(url, function(data){
+        _this.encoder = data;
+        _this.modulesArray.push(_this.encoder);
+      });
+    };
+    this.getEncoder();
+
+    this.getImageProcessor = function() {
+      var url = 'http://localhost:3300/ping/module/imageProcessor/verbose';
+      HTTPService.get(url, function(data){
+        _this.imageProcessor = data;
+        _this.modulesArray.push(_this.imageProcessor);
+      });
+    };
+    this.getImageProcessor();
+
+    this.getHttpNotifier = function() {
+      var url = 'http://localhost:3300/ping/module/httpNotifier/verbose';
+      HTTPService.get(url, function(data){
+        _this.httpNotifier = data;
+        _this.modulesArray.push(_this.httpNotifier);
+      });
+    };
+    this.getHttpNotifier();
+
+    this.getFileManager = function() {
+      var url = 'http://localhost:3300/ping/module/fileManager/verbose';
+      HTTPService.get(url, function(data){
+        _this.fileManager = data;
+        _this.modulesArray.push(_this.fileManager);
+      });
+    };
+    this.getFileManager();
+
     this.showBottomSheet = function($event, index) {
+      // var serversArray = _this.server1 + _this.server2 + _this.server3 + _this.server4 + _this.server5 + _this.server6;
+      // var modulesArray = _this.oscLogger + _this.workflowManager + _this.httpApi + _this.encoder + _this.imageProcessor + _this.httpNotifier + _this.fileManager;
+
       $mdBottomSheet.show({
         templateUrl: 'serverList/templates/serverListBottomSheet.html',
         controller: 'ServerListBottomSheetCtrl',
-        targetEvent: $event, 
+        targetEvent: $event,
         locals: {
-          modules: _this.modules,
-          thisServer: _this.servers[index]
+          // thisServer: _this.allServers[index],
+          thisServer: _this.serversArray[index],
+          servers: _this.serversArray,
+          modules: _this.modulesArray
         }
       });
     };
 
-    this.serverStatusImg = function(index) {
-      var thisServer = this.servers[index];
-      if(thisServer.serverStatus == 3){
-        return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-      } else if(thisServer.sserverStatus == 2) {
-        return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-      } else if(thisServer.serverStatus == 1){
-        return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
-      } 
-    };
+    // this.serverStatusImg = function(index) {
+    //   var serversObj = _this.server1 + _this.server2 + _this.server3 + _this.server4 + _this.server5 + _this.server6;
+    //   var thisServer = serversObj[index];
+    //   console.log('thisServer: ' + thisServer);
+
+    //   if(thisServer.message.status == 'good'){
+    //     return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+    //   } else if(thisServer.message.status == 'warn') {
+    //     return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
+    //   } else if(thisServer.message.status == 'error'){
+    //     return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
+    //   } else {
+    //     return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+    //   }
+    // };
 
     this.servers = [
       {
@@ -169,60 +299,77 @@ angular.module('ServerList', ['SharedHTTP'])
       }
     ];
 
-    this.modules = [
-          {
-            moduleName: "module name 1", 
-            status: "ok",
-            completedTasks: 78,
-            inProgressTasks: 2,
-            inQueueTasks: 23,
-            erroredTasks: 0
-          },
-          {
-            moduleName: "module name 2",
-            status: "ok", 
-          },
-          {
-            moduleName: "module name 3", 
-            status: "warn",
-          },
-          {
-            moduleName: "module name 4", 
-            status: "err",
-          },
-          {
-            moduleName: "module name 5", 
-            status: "ok",
-          },
-          {
-            moduleName: "module name 6", 
-            status: "ok",
-          },
-          {
-            moduleName: "module name 7", 
-            status: "ok",
-          }
-        ];
-  
+  //   this.modules = [
+  //         {
+  //           moduleName: "module name 1",
+  //           status: "ok",
+  //           completedTasks: 78,
+  //           inProgressTasks: 2,
+  //           inQueueTasks: 23,
+  //           erroredTasks: 0
+  //         },
+  //         {
+  //           moduleName: "module name 2",
+  //           status: "ok",
+  //         },
+  //         {
+  //           moduleName: "module name 3",
+  //           status: "warn",
+  //         },
+  //         {
+  //           moduleName: "module name 4",
+  //           status: "err",
+  //         },
+  //         {
+  //           moduleName: "module name 5",
+  //           status: "ok",
+  //         },
+  //         {
+  //           moduleName: "module name 6",
+  //           status: "ok",
+  //         },
+  //         {
+  //           moduleName: "module name 7",
+  //           status: "ok",
+  //         }
+  //       ];
+
   }])
-  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', 'modules', 'thisServer', 
-    function($scope, $mdBottomSheet, $mdDialog, modules, thisServer) {
-    
-    $scope.server = thisServer;
-    $scope.modules = modules;
+
+  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', 'servers', 'thisServer', 'modules',
+    function($scope, $mdBottomSheet, $mdDialog, servers, thisServer, modules) {
+
+    $scope.server = servers;
+    $scope.thisServer = thisServer;
+    $scope.modules= modules;
+
+    $scope.filterStatusObj = function(items) {
+        console.log(items);
+        var result = {};
+        angular.forEach(items, function(value, key) {
+            if (!value.hasOwnProperty('status')) {
+                result[key] = value;
+            }
+        });
+        return result;
+    }
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();
     };
 
     $scope.moduleStatusImg = function(index) {
-      if($scope.modules[index].status == 'ok'){
-        return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-      } else if($scope.modules[index].status == 'warn') {
-        return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-      } else if($scope.modules[index].status == 'err'){
+      if($scope.modules[index].message){
+        if($scope.modules[index].message.status == 'warn'){
+          return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
+        } else if($scope.modules[index].message.status == 'err'){
+          return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
+        } else {
+          return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+        }
+      } else {
         return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
-      } 
+      }
     };
 
     // $scope.selectModule = function(index) {
@@ -295,11 +442,11 @@ angular.module('ServerList', ['SharedHTTP'])
     //     return 'img/server-warn-sm.png';
     //   } else if($scope.server.status == 'err'){
     //     return 'img/server-err-sm.png';
-    //   } 
+    //   }
     // }
 
   }])
-  .controller('TaskStatusModalCtrl',['$scope', '$mdDialog', 'thisTask', 
+  .controller('TaskStatusModalCtrl',['$scope', '$mdDialog', 'thisTask',
     function($scope, $mdDialog, thisTask) {
 
       $scope.thisTask = thisTask;
@@ -309,7 +456,7 @@ angular.module('ServerList', ['SharedHTTP'])
       };
 
   }])
-  .controller('ModuleDetailsModalCtrl',['$scope', '$mdDialog', 'thisModule', 
+  .controller('ModuleDetailsModalCtrl',['$scope', '$mdDialog', 'thisModule',
     function($scope, $mdDialog, thisModule) {
 
       $scope.thisModule = thisModule;
@@ -319,6 +466,20 @@ angular.module('ServerList', ['SharedHTTP'])
       };
 
   }])
+
+  .filter('without', function() {
+    return function(items, field) {
+      var result = {};
+      angular.forEach(items, function(value, key) {
+        if (key !== field) {
+          console.log('yea');
+          result[key] = value;
+        }
+      });
+      return result;
+    };
+  })
+
   .directive('serverList', function() {
     return {
        scope: {},

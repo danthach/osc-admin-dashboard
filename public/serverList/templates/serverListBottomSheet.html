@@ -4,13 +4,13 @@
 			<p class="close-btn material-icons" ng-click="closeBottomSheet()">&#xE888;</p>
 		</div>
 		<div class="server-detail-info" flex="100">
-			<h2>{{server.name}}</h2>
+			<h2>{{thisServer.message.hostname}}</h2>
 			<p>
-				IP Address: &nbsp;<span>{{server.ip}}</span>
-				Uptime: &nbsp;<span>{{server.uptime}}</span>
-				Hostname: &nbsp;<span>{{server.host}}</span>
-				Roles: &nbsp;<span>{{server.roles}}</span>
-				Disk Usage: &nbsp;<span>{{server.diskUsage}}</span>
+				IP Address: &nbsp;<span>{{thisServer.ip}}</span>
+				Uptime: &nbsp;<span>{{thisServer.message.uptime}}</span>
+				<!-- Hostname: &nbsp;<span>{{server.host}}</span>
+				Roles: &nbsp;<span>{{server.roles}}</span> -->
+				Disk Usage: &nbsp;<span>{{thisServer.message.diskUsage}}</span>
 			</p>
 		</div>
 		<div flex="100">
@@ -22,7 +22,7 @@
 					  	<md-card class="module-status-card" ng-click="showModuleDetails($event, $index)">
 					    	<md-card-content>
 					            <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
-					      		<h3 class="server-host">{{module.moduleName}}</h3>
+					      		<h3 class="server-host">{{module.entityID}}</h3>
 					    	</md-card-content>
 					    </md-card>
 					</div>
@@ -36,11 +36,11 @@
 					    		<div class="exec-card-header" flex>
 					            	<h2>EXECUTIONS</h2>
 					            	<p ng-show="!showExecSearch" ng-click="showExecSearch = !showExecSearch">
-					            		<i class="material-icons">&#xE8B6;</i> 
+					            		<i class="material-icons">&#xE8B6;</i>
 					            		SEARCH
 					            	</P>
 					            	<span class="material-icons"
-					            	      ng-show="showExecSearch" 
+					            	      ng-show="showExecSearch"
 					            	      ng-click="showExecSearch = !showExecSearch; e = ''">
 					            		&#xE888;
 					            	</span>
@@ -69,8 +69,8 @@
 					            		<i class="material-icons">&#xE8B6;</i>
 					            		SEARCH
 					            	</p>
-					            	<span class="material-icons" 
-					            	      ng-show="showStepSearch" 
+					            	<span class="material-icons"
+					            	      ng-show="showStepSearch"
 					            	      ng-click="showStepSearch = !showStepSearch; s = ''">
 					            		&#xE888;
 					            	</span>
@@ -102,8 +102,8 @@
 					            		<i class="material-icons">&#xE8B6;</i>
 					            		SEARCH
 					            	</p>
-					            	<span class="material-icons" 
-					            		  ng-show="showTaskSearch" 
+					            	<span class="material-icons"
+					            		  ng-show="showTaskSearch"
 					            		  ng-click="showTaskSearch = !showTaskSearch; t = ''">
 					            		&#xE888;
 					            	</span>
@@ -115,7 +115,7 @@
 							        </md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="task in thisStep.tasks | filter:t as results" ng-click="showTaskDetails($event, $index)">  
+						          	<tr ng-repeat="task in thisStep.tasks | filter:t as results" ng-click="showTaskDetails($event, $index)">
 						          		<td>{{task.id}}</td>
 						          		<td>{{task.status}}</td>
 						          		<td class="button-cell">
@@ -170,7 +170,7 @@
 					    	</md-card-content>
 					    </md-card>
 					</div>
-			    </md-content>    
+			    </md-content>
 		      </md-tab>
 		    </md-tabs>
 		  </md-content>

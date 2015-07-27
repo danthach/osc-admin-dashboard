@@ -2,14 +2,15 @@
   <form>
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>{{thisModule.moduleName}} Details</h2>
+      <h2>{{thisModule.entityID}} Details</h2>
     </div>
   </md-toolbar>
   <md-dialog-content>
     <p>Module Stats Since: Today at 4:48pm MST</p>
     <md-card>
       <md-card-content>
-          <h3>All Tasks</h3>
+        <div ng-repeat="(key, value) in thisModule.message | without:'status'">
+          <h3>{{key}}</h3>
           <table class="table table-striped text-center">
               <tr>
                 <th>Completed</th>
@@ -18,42 +19,13 @@
                 <th>Errored</th>
               </tr>
               <tr>
-                <td>{{thisModule.completedTasks}}</td>
-                <td>{{thisModule.inProgressTasks}}</td>
-                <td>{{thisModule.inQueueTasks}}</td>
-                <td>{{thisModule.erroredTasks}}</td>
+                <td>{{value.completed}}</td>
+                <td>{{value.inProgress}}</td>
+                <td>{{value.queue}}</td>
+                <td>{{value.errored}}</td>
               </tr>
           </table>
-          <h3>Live Encode Tasks</h3>
-          <table class="table table-striped text-center">
-              <tr>
-                <th>Completed</th>
-                <th>In Progress</th>
-                <th>In Queue</th>
-                <th>Errored</th>
-              </tr>
-              <tr>
-                <td>{{thisModule.completedTasks}}</td>
-                <td>{{thisModule.inProgressTasks}}</td>
-                <td>{{thisModule.inQueueTasks}}</td>
-                <td>{{thisModule.erroredTasks}}</td>
-              </tr>
-          </table>
-          <h3>Clips Tasks</h3>
-          <table class="table table-striped text-center">
-              <tr>
-                <th>Completed</th>
-                <th>In Progress</th>
-                <th>In Queue</th>
-                <th>Errored</th>
-              </tr>
-              <tr>
-                <td>{{thisModule.completedTasks}}</td>
-                <td>{{thisModule.inProgressTasks}}</td>
-                <td>{{thisModule.inQueueTasks}}</td>
-                <td>{{thisModule.erroredTasks}}</td>
-              </tr>
-          </table>
+        </div>
       </md-card-content>
     </md-card>
   </md-dialog-content>

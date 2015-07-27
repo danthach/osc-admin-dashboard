@@ -2,12 +2,12 @@
 angular.module('SharedHTTP', [])
 
 .factory('HTTPService', ['$http', function($http) {
-    
+
   return {
-      
+
     get: function(url, callback){
         $http.get(url).success(function(data) {
-        console.log('Success getting ' + url + ' Data = ', data);
+        //console.log('Success getting ' + url + ' Data = ', data);
         callback(data);
       }).
        error(function(data, status, headers, config) {
@@ -28,7 +28,7 @@ angular.module('SharedHTTP', [])
           callback(false, data);
         });
      },
-     
+
     // update: function(id, data, url, callback) {
     //     $http.put(url + id, data).
     //      success(function(data, status, headers, config) {
@@ -40,7 +40,7 @@ angular.module('SharedHTTP', [])
     //       callback(false);
     //     });
     //  },
-     
+
      deleteItem: function(id, url, callback) {
         $http.delete(url + id).
          success(function(data, status, headers, config) {
@@ -52,6 +52,6 @@ angular.module('SharedHTTP', [])
           callback(false);
         });
      }
-     
+
   };
 }]);
