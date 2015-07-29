@@ -18,7 +18,7 @@
           <div class="server-status-img"
                ng-class="{'status-ok': true, 'status-warn': server.status == 2, 'status-err': server.status == 1}">
           </div>
-      		<h3 class="server-host">{{server.message.status}}</h3>
+      		<h3 class="server-host">{{server.message.hostname}}</h3>
           <h3 class="server-roles">{{server.message.ip}}</h3>
           <hr/>
           <h3 class="server-roles" ng-repeat="role in server.roles">{{role}}</h3>

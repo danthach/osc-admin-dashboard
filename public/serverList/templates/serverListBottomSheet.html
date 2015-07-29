@@ -52,9 +52,9 @@
 							        </md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="exec in server.executions | filter:e as results" ng-click="selectExecution($index)">
-						          		<td>{{exec.execId}}</td>
-						          		<td>{{exec.status}}</td>
+						          	<tr ng-repeat="(key, value) in executions.executions" ng-click="selectExecution($index)">
+						          		<td>{{value.executionID}}</td>
+						          		<td>{{value.status}}</td>
 						          	</tr>
 						        </table>
 					    	</md-card-content>
@@ -82,9 +82,9 @@
 							        </md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="step in thisExecution.steps | filter:s as results" ng-click="selectStep($index)">
-						          		<td>{{step.label}}</td>
-						          		<td>{{step.status}}</td>
+						          	<tr ng-repeat="(key, value) in executionPing.message.executionDetails.steps" ng-click="selectStep($index)">
+						          		<td>{{value.label}}</td>
+						          		<td>{{value.status}}</td>
 						          	</tr>
 						          	<tr ng-show="!thisExecution.steps">
 						          		<td>Select an Execution...</td>
@@ -115,9 +115,10 @@
 							        </md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="task in thisStep.tasks | filter:t as results" ng-click="showTaskDetails($event, $index)">
-						          		<td>{{task.id}}</td>
-						          		<td>{{task.status}}</td>
+						          	<tr ng-repeat="(key, value) in thisStep.tasks" ng-click="showTaskDetails($event, $index)">
+						          		<td>{{value.stepID}}</td>
+						          		<td>{{value.type}}</td>
+						          		<td>{{value.status}}</td>
 						          		<td class="button-cell">
 						          			<button class="md-raised md-button md-default-theme" ng-click="killTask($event, $index)" flex>
 								    			<span class="ng-scope">KILL</span>
@@ -139,11 +140,13 @@
 					<div flex="100">
 					  	<md-card>
 					    	<md-card-content id="module-action-card" layout="row">
-					    		<button class="md-raised md-primary md-button md-default-theme" flex>
-					    			<span class="ng-scope">SETTINGS</span>
-					    			<div class="md-ripple-container"></div>
-					    		</button>
-					    		<button class="md-raised md-primary md-button md-default-theme" flex>
+					    		<div ng-repeat="(key, value) in thisExecutionUrl">
+						    		<button class="md-raised md-primary md-button md-default-theme" flex>
+                      <span class="ng-scope"><a ng-href="{{value}}">{{key}}</a></span>
+						    			<div class="md-ripple-container"></div>
+						    		</button>
+						    	</div>
+					    		<!-- <button class="md-raised md-primary md-button md-default-theme" flex>
 					    			<span class="ng-scope">FILES</span>
 					    			<div class="md-ripple-container"></div>
 					    		</button>
@@ -165,7 +168,7 @@
 					    		</button>
 					    		<button class="md-raised md-button md-default-theme" flex>
 					    			<span class="ng-scope">RESUME</span>
-					    			<div class="md-ripple-container"></div>
+					    			<div class="md-ripple-container"></div> -->
 					    		</button>
 					    	</md-card-content>
 					    </md-card>

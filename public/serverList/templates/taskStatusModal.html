@@ -2,13 +2,22 @@
   <form>
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>Status of "{{thisTask.id}}" Task</h2>
+      <h2>Status of "{{thisTask.type}}" Task</h2>
     </div>
   </md-toolbar>
   <md-dialog-content>
     <md-card>
       <md-card-content>
-          {{thisTask.error}}
+        <p>Error</p>
+        {{thisTask.error}}
+      </md-card-content>
+      <md-card-content>
+        <p>Priority</p>
+        {{thisTask.priority}}
+      </md-card-content>
+      <md-card-content>
+        <p>Timeout Length</p>
+        {{thisTask.timeoutLength}}
       </md-card-content>
     </md-card>
   </md-dialog-content>

@@ -132,6 +132,43 @@ angular.module('ServerList', ['SharedHTTP'])
     };
     this.getFileManager();
 
+    //executions
+    this.getExecutions = function() {
+      var url = 'http://localhost:3300/status/complete';
+      HTTPService.get(url, function(data){
+        _this.executions = data;
+        var executionResult = _this.executions.executions;
+        var justUrls = [];
+        var copyValue = {};
+
+        angular.forEach(executionResult, function(value, key) {
+          //iterate over the key/value pairs of each execution
+          copyValue = angular.copy(value);
+          angular.forEach(copyValue, function(v, k) {
+            // find the urls for execution
+            if (k === 'ping') {
+              return;
+            } else if (k === 'restart') {
+              return;
+            } else if (k === 'kill') {
+              return;
+            } else if (k === 'pause') {
+              return;
+            } else if (k === 'resume') {
+              return;
+            } else if (k === 'force') {
+              return;
+            } else {
+              delete copyValue[k]
+            }
+          });
+          justUrls.push(copyValue);
+        });
+        _this.onlyExecutionUrls = justUrls;
+      });
+    };
+    this.getExecutions();
+
     this.showBottomSheet = function($event, index) {
       // var serversArray = _this.server1 + _this.server2 + _this.server3 + _this.server4 + _this.server5 + _this.server6;
       // var modulesArray = _this.oscLogger + _this.workflowManager + _this.httpApi + _this.encoder + _this.imageProcessor + _this.httpNotifier + _this.fileManager;
@@ -144,7 +181,12 @@ angular.module('ServerList', ['SharedHTTP'])
           // thisServer: _this.allServers[index],
           thisServer: _this.serversArray[index],
           servers: _this.serversArray,
-          modules: _this.modulesArray
+          modules: _this.modulesArray,
+          thisExecution: _this.executions[index],
+          executions: _this.executions,
+          executionUrls: _this.onlyExecutionUrls,
+          thisExecutionUrl: _this.onlyExecutionUrls[index],
+          thisExecutionPing: $scope.executionPing
         }
       });
     };
@@ -165,139 +207,139 @@ angular.module('ServerList', ['SharedHTTP'])
     //   }
     // };
 
-    this.servers = [
-      {
-        name: "Server One",
-        host: "uatfms.amsoscar.com",
-        roles: ["Full Stack", "Clips"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 3,
-        executions: [
-              {execId: 1433276102578, status: 'OK', steps: [
-                {label: 'Create Media Directories', status: 'OK', tasks: [
-                  {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-                ]},
-                {label: 'Live Encode', status: 'OK', tasks: [
-                  {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-                ]},
-                {label: 'Upload Stream and Create Spritesheet', status: 'OK', tasks: [
-                  {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'imgProcessor', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'httpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-                ]},
-                {label: 'Upload VTT', status: 'OK', tasks: [
-                  {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-                ]},
-                {label: 'Upload Thumbnails', status: 'OK', tasks: [
-                  {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'imgProcessor', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'httpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-                ]},
-                {label: 'Upload Thumbnails', status: 'OK', tasks: [
-                  {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-                  {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-                ]}
-              ]},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      },
-      {
-        name: "Server Two",
-        host: "uatfms.amsoscar.com",
-        roles: ["Live", "Encode"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 1,
-        executions: [
-              {execId: 1433276102578, status: 'OK'},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      },
-      {
-        name: "Server Three",
-        host: "uatfms.amsoscar.com",
-        roles: ["Full Stack", "Clips"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 3,
-        executions: [
-              {execId: 1433276102578, status: 'OK'},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      },
-      {
-        name: "Server Four",
-        host: "uatfms.amsoscar.com",
-        roles: ["Clips"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 3,
-        executions: [
-              {execId: 1433276102578, status: 'OK'},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      },
-      {
-        name: "Server Five",
-        host: "uatfms.amsoscar.com",
-        roles: ["Full Stack", "Clips", "Live Encode"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 1,
-        executions: [
-              {execId: 1433276102578, status: 'OK'},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      },
-      {
-        name: "Server Six",
-        host: "uatfms.amsoscar.com",
-        roles: ["Full Stack", "Clips"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 2,
-        executions: [
-              {execId: 1433276102578, status: 'OK'},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      },
-      {
-        name: "Server Seven",
-        host: "uatfms.amsoscar.com",
-        roles: ["Full Stack"],
-        ip: "76.120.70.39",
-        uptime: "36d 8h 29m",
-        diskUsage: "38%",
-        status: 1,
-        executions: [
-              {execId: 1433276102578, status: 'OK'},
-              {execId: 1433276141541, status: 'OK'},
-              {execId: 1433276104647, status: 'OK'},
-              {execId: 1433276102578, status: 'OK'},
-            ]
-      }
-    ];
+    this.servers = _this.serversArray;
+    //   {
+    //     name: "Server One",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Full Stack", "Clips"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 3,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK', steps: [
+    //             {label: 'Create Media Directories', status: 'OK', tasks: [
+    //               {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'}
+    //             ]},
+    //             {label: 'Live Encode', status: 'OK', tasks: [
+    //               {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
+    //             ]},
+    //             {label: 'Upload Stream and Create Spritesheet', status: 'OK', tasks: [
+    //               {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'imgProcessor', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'httpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
+    //             ]},
+    //             {label: 'Upload VTT', status: 'OK', tasks: [
+    //               {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
+    //             ]},
+    //             {label: 'Upload Thumbnails', status: 'OK', tasks: [
+    //               {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'imgProcessor', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'httpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
+    //             ]},
+    //             {label: 'Upload Thumbnails', status: 'OK', tasks: [
+    //               {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
+    //               {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
+    //             ]}
+    //           ]},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   },
+    //   {
+    //     name: "Server Two",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Live", "Encode"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 1,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK'},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   },
+    //   {
+    //     name: "Server Three",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Full Stack", "Clips"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 3,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK'},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   },
+    //   {
+    //     name: "Server Four",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Clips"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 3,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK'},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   },
+    //   {
+    //     name: "Server Five",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Full Stack", "Clips", "Live Encode"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 1,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK'},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   },
+    //   {
+    //     name: "Server Six",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Full Stack", "Clips"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 2,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK'},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   },
+    //   {
+    //     name: "Server Seven",
+    //     host: "uatfms.amsoscar.com",
+    //     roles: ["Full Stack"],
+    //     ip: "76.120.70.39",
+    //     uptime: "36d 8h 29m",
+    //     diskUsage: "38%",
+    //     status: 1,
+    //     executions: [
+    //           {execId: 1433276102578, status: 'OK'},
+    //           {execId: 1433276141541, status: 'OK'},
+    //           {execId: 1433276104647, status: 'OK'},
+    //           {execId: 1433276102578, status: 'OK'},
+    //         ]
+    //   }
+    // ];
 
   //   this.modules = [
   //         {
@@ -336,27 +378,42 @@ angular.module('ServerList', ['SharedHTTP'])
 
   }])
 
-  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', 'servers', 'thisServer', 'modules',
-    function($scope, $mdBottomSheet, $mdDialog, servers, thisServer, modules) {
+  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', 'servers', 'thisServer', 'modules', 'executions', 'thisExecution', 'executionUrls', '$http',
+    function($scope, $mdBottomSheet, $mdDialog, servers, thisServer, modules, executions, thisExecution, executionUrls, $http) {
 
     $scope.server = servers;
     $scope.thisServer = thisServer;
     $scope.modules= modules;
-
-    $scope.filterStatusObj = function(items) {
-        console.log(items);
-        var result = {};
-        angular.forEach(items, function(value, key) {
-            if (!value.hasOwnProperty('status')) {
-                result[key] = value;
-            }
-        });
-        return result;
-    }
+    $scope.executions = executions;
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();
     };
+
+    // $scope.filterUrls = function(items) {
+    //     var result = [];
+    //     var executionUrls = [];
+
+    //     angular.forEach(items, function(value, key) {
+    //       angular.forEach(value, function(v, k) {
+    //         if (k === 'ping') {
+    //           result.push({'ping':v});
+    //         } else if (k === 'pause') {
+    //           result.push({'pause':v});
+    //         } else if (k === 'resume') {
+    //           result.push({'resume':v});
+    //         } else if (k === 'force') {
+    //           result.push({'force':v});
+    //         } else if (k === 'kill') {
+    //           result.push({'kill':v});
+    //         } else if (k === 'restart') {
+    //           result.push({'restart':v});
+    //         }
+    //       });
+    //       executionUrls.push(result);
+    //     });
+    //     return result;
+    // };
 
     $scope.moduleStatusImg = function(index) {
       if($scope.modules[index].message){
@@ -380,14 +437,24 @@ angular.module('ServerList', ['SharedHTTP'])
     // };
 
     $scope.selectExecution = function(index) {
-      $scope.thisExecution = $scope.server.executions[index];
+      $scope.thisExecution = executions.executions[index];
+      $scope.thisExecutionUrl = executionUrls[index];
       $scope.thisStep = undefined;
       $scope.thisTask = undefined;
+      $scope.executionPingUrl = executionUrls[index].ping;
+
+      //var url = $scope.executionPingUrl;
+      $http.get($scope.executionPingUrl).
+        success(function(data) {
+          console.log(data);
+          $scope.executionPing = data;
+      });
     };
 
     $scope.selectStep = function(index) {
-      $scope.thisStep = $scope.thisExecution.steps[index];
+      $scope.thisStep = $scope.executionPing.message.executionDetails.steps[index];
       $scope.thisTask = undefined;
+      console.log($scope.thisStep);
     };
 
     $scope.showModuleDetails = function(event, index) {
@@ -406,6 +473,7 @@ angular.module('ServerList', ['SharedHTTP'])
 
     $scope.showTaskDetails = function(event, index) {
       $scope.thisTask = $scope.thisStep.tasks[index];
+      console.log($scope.thisTask);
 
       $mdDialog.show({
         controller: 'TaskStatusModalCtrl',
@@ -472,13 +540,27 @@ angular.module('ServerList', ['SharedHTTP'])
       var result = {};
       angular.forEach(items, function(value, key) {
         if (key !== field) {
-          console.log('yea');
           result[key] = value;
         }
       });
       return result;
     };
   })
+
+  // .filter('withoutMult', function() {
+  //   return function(execs, field) {
+  //     field = field.split(',');
+  //     var result = {};
+  //     angular.forEach(execs, function(value, key) {
+  //       for (var i = 0; i < field.length; i++) {
+  //         if (key !== field) {
+  //           result[key] = value;
+  //         }
+  //       };
+  //     });
+  //     return result;
+  //   };
+  // })
 
   .directive('serverList', function() {
     return {
