@@ -7,10 +7,10 @@
 			<h2>{{thisServer.message.hostname}}</h2>
 			<p>
 				IP Address: &nbsp;<span>{{thisServer.message.ip}}</span>
-				Uptime: &nbsp;<span>{{thisServer.message.uptime}}</span>
+				Uptime: &nbsp;<span>{{thisServer.message.uptime | secondsToTimeString}}</span>
 				<!-- Hostname: &nbsp;<span>{{server.host}}</span>
 				Roles: &nbsp;<span>{{server.roles}}</span> -->
-				Disk Usage: &nbsp;<span>{{thisServer.message.diskUsage}}</span>
+				Disk Usage: &nbsp;<span>{{thisServer.message.diskUsage}}%</span>
 			</p>
 		</div>
 		<div flex="100">
@@ -140,36 +140,15 @@
 					<div flex="100">
 					  	<md-card>
 					    	<md-card-content id="module-action-card" layout="row">
+					    		<div>
+						    		<button class="md-raised md-primary md-button md-default-theme" ng-click="showSettings($event, $index)" flex>SETTINGS</button>
+						    	</div>
 					    		<div ng-repeat="(key, value) in thisExecutionUrl">
 						    		<button class="md-raised md-primary md-button md-default-theme" flex>
                       <span class="ng-scope"><a ng-href="{{value}}">{{key}}</a></span>
 						    			<div class="md-ripple-container"></div>
 						    		</button>
 						    	</div>
-					    		<!-- <button class="md-raised md-primary md-button md-default-theme" flex>
-					    			<span class="ng-scope">FILES</span>
-					    			<div class="md-ripple-container"></div>
-					    		</button>
-					    		<button class="md-raised md-button md-default-theme" flex>
-					    			<span class="ng-scope">KILL</span>
-					    			<div class="md-ripple-container"></div>
-					    		</button>
-					    		<button class="md-raised md-button md-default-theme" flex>
-					    			<span class="ng-scope">FORCE</span>
-					    			<div class="md-ripple-container"></div>
-					    		</button>
-					    		<button class="md-raised md-button md-default-theme" flex>
-					    			<span class="ng-scope">RETRY</span>
-					    			<div class="md-ripple-container"></div>
-					    		</button>
-					    		<button class="md-raised md-button md-default-theme" flex>
-					    			<span class="ng-scope">PAUSE</span>
-					    			<div class="md-ripple-container"></div>
-					    		</button>
-					    		<button class="md-raised md-button md-default-theme" flex>
-					    			<span class="ng-scope">RESUME</span>
-					    			<div class="md-ripple-container"></div> -->
-					    		</button>
 					    	</md-card-content>
 					    </md-card>
 					</div>

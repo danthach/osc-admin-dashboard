@@ -14,11 +14,20 @@ angular.module('ServerList', ['SharedHTTP'])
     // };
     // this.getServerData();
 
+    this.secondsToHMS = function(d) {
+      d = Number(d);
+      var h = Math.floor(d / 3600);
+      var m = Math.floor(d % 3600 / 60);
+      var s = Math.floor(d % 3600 % 60);
+      return ((h > 0 ? (h >= 10 ? h : '0' + h): '00') + ':' + (m > 0 ? (m >= 10 ? m : '0' + m): '00') + ':' + (s > 0 ? (s >= 10 ? s : '0' + s): '00')  );
+    };
+
     //server calls
     this.getServer1 = function() {
       var url = 'http://54.197.231.168:3300/ping/server/irrelevent/verbose';
       HTTPService.get(url, function(data){
         _this.server1 = data;
+        //_this.server1.message.uptime = _this.secondsToHMS(_this.server1.message.uptime);
         _this.serversArray.push(_this.server1);
       });
     };
@@ -28,6 +37,7 @@ angular.module('ServerList', ['SharedHTTP'])
       var url = 'http://redevfms1.amsoscar.com:3300/ping/server/irrelevent/verbose';
       HTTPService.get(url, function(data){
         _this.server2 = data;
+        //_this.server2.message.uptime = _this.secondsToHMS(_this.server2.message.uptime);
         _this.serversArray.push(_this.server2);
       });
     };
@@ -184,7 +194,7 @@ angular.module('ServerList', ['SharedHTTP'])
           });
           justUrls.push(copyValue);
         });
-        _this.onlyExecutionUrls = justUrls;
+        _this.serversArray[index].onlyExecutionUrls = justUrls;
         this.checkServerData($event, index);
     };
 
@@ -209,7 +219,7 @@ angular.module('ServerList', ['SharedHTTP'])
           modules: _this.serversArray[index].modulesArray,
           executions: _this.serversArray[index].executions,
           // thisExecution: _this.executions[index],
-          executionUrls: _this.onlyExecutionUrls
+          executionUrls: _this.serversArray[index].onlyExecutionUrls
           // thisExecutionUrl: _this.onlyExecutionUrls[index]
           // thisExecutionPing: _this.executionPing
         }
@@ -241,7 +251,7 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.thisServer = thisServer;
     $scope.modules = modules;
     $scope.executions = executions;
-
+    $scope.executionUrls = executionUrls;
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();
@@ -343,6 +353,18 @@ angular.module('ServerList', ['SharedHTTP'])
       });
     };
 
+    $scope.showSettings = function(event, index) {
+      $mdDialog.show({
+        controller: 'SettingsModalCtrl',
+        templateUrl: 'serverList/templates/settingsModal.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          executionPing: $scope.executionPing
+        }
+      });
+    };
+
     $scope.killTask = function(event, index) {
       event.stopPropagation();
       var msg = "Are you sure you want to kill this task?";
@@ -373,24 +395,39 @@ angular.module('ServerList', ['SharedHTTP'])
   }])
   .controller('TaskStatusModalCtrl',['$scope', '$mdDialog', 'thisTask',
     function($scope, $mdDialog, thisTask) {
-
       $scope.thisTask = thisTask;
-
       $scope.closeTaskDetails = function() {
         $mdDialog.hide();
       };
-
   }])
+
   .controller('ModuleDetailsModalCtrl',['$scope', '$mdDialog', 'thisModule',
     function($scope, $mdDialog, thisModule) {
-
       $scope.thisModule = thisModule;
-
       $scope.closeTaskDetails = function() {
         $mdDialog.hide();
       };
-
   }])
+
+  .controller('SettingsModalCtrl',['$scope', '$mdDialog', 'executionPing',
+    function($scope, $mdDialog, executionPing) {
+      $scope.executionPing = executionPing;
+      $scope.closeTaskDetails = function() {
+        $mdDialog.hide();
+      };
+  }])
+
+  .filter('with', function() {
+    return function(items, field) {
+      var result = {};
+      angular.forEach(items, function(value, key) {
+        if (key === field) {
+          result[key] = value;
+        }
+      });
+      return result;
+    };
+  })
 
   .filter('without', function() {
     return function(items, field) {
@@ -404,20 +441,27 @@ angular.module('ServerList', ['SharedHTTP'])
     };
   })
 
-  // .filter('withoutMult', function() {
-  //   return function(execs, field) {
-  //     field = field.split(',');
-  //     var result = {};
-  //     angular.forEach(execs, function(value, key) {
-  //       for (var i = 0; i < field.length; i++) {
-  //         if (key !== field) {
-  //           result[key] = value;
-  //         }
-  //       };
-  //     });
-  //     return result;
-  //   };
-  // })
+  .filter('secondsToTimeString', function() {
+      //Returns duration from milliseconds in hh:mm:ss format.
+      return function(seconds) {
+        var h = 3600;
+        var m = 60;
+        var hours = Math.floor(seconds/h);
+        var minutes = Math.floor( (seconds % h)/m );
+        var scnds = Math.floor( (seconds % m) );
+        var timeString = '';
+        if(scnds < 10) scnds = "0"+scnds;
+        if(hours < 10) hours = "0"+hours;
+        if(minutes < 10) minutes = "0"+minutes;
+        if (hours == "00") {
+          timeString = minutes +" minutes "+scnds +" seconds";
+        } else {
+          timeString = hours +" hours "+ minutes +" minutes "+scnds +" seconds";
+        }
+
+        return timeString;
+    }
+  })
 
   .directive('serverList', function() {
     return {
