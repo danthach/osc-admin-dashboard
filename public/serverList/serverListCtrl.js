@@ -3,19 +3,20 @@ angular.module('ServerList', ['SharedHTTP'])
 
     var _this = this;
     _this.serversArray = [];
-    _this.modulesArray = [];
+    // _this.serversArray[index] = 0;
+    // _this.serversArray[index].modulesArray = [];
 
-    this.getServerData = function() {
-      var url = 'servers.json';
-      HTTPService.get(url, function(data){
-        _this.allServers = data;
-      });
-    };
-    this.getServerData();
+    // this.getServerData = function() {
+    //   var url = 'servers.json';
+    //   HTTPService.get(url, function(data){
+    //     _this.allServers = data;
+    //   });
+    // };
+    // this.getServerData();
 
     //server calls
     this.getServer1 = function() {
-      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      var url = 'http://54.197.231.168:3300/ping/server/irrelevent/verbose';
       HTTPService.get(url, function(data){
         _this.server1 = data;
         _this.serversArray.push(_this.server1);
@@ -24,7 +25,7 @@ angular.module('ServerList', ['SharedHTTP'])
     this.getServer1();
 
     this.getServer2 = function() {
-      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
+      var url = 'http://redevfms1.amsoscar.com:3300/ping/server/irrelevent/verbose';
       HTTPService.get(url, function(data){
         _this.server2 = data;
         _this.serversArray.push(_this.server2);
@@ -32,114 +33,133 @@ angular.module('ServerList', ['SharedHTTP'])
     };
     this.getServer2();
 
-    this.getServer3 = function() {
-      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
-      HTTPService.get(url, function(data){
-        _this.server3 = data;
-        _this.serversArray.push(_this.server3);
-      });
-    };
-    this.getServer3();
+    // this.getServer3 = function() {
+    //   var url = 'http://devfms508.amsoscar.com:3300/ping/server/irrelevent/verbose';
+    //   HTTPService.get(url, function(data){
+    //     _this.server3 = data;
+    //     _this.serversArray.push(_this.server3);
+    //   });
+    // };
+    // this.getServer3();
 
-    this.getServer4 = function() {
-      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
-      HTTPService.get(url, function(data){
-        _this.server4 = data;
-        _this.serversArray.push(_this.server4);
-      });
-    };
-    this.getServer4();
+    // this.getServer4 = function() {
+    //   var url = 'http://qafms.amsoscar.com:3300/ping/server/irrelevent/verbose';
+    //   HTTPService.get(url, function(data){
+    //     _this.server4 = data;
+    //     _this.serversArray.push(_this.server4);
+    //   });
+    // };
+    // this.getServer4();
 
-    this.getServer5 = function() {
-      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
-      HTTPService.get(url, function(data){
-        _this.server5 = data;
-        _this.serversArray.push(_this.server5);
-      });
-    };
-    this.getServer5();
+    // this.getServer5 = function() {
+    //   var url = 'http://uatfms2.amsoscar.com:3300/ping/server/irrelevent/verbose';
+    //   HTTPService.get(url, function(data){
+    //     _this.server5 = data;
+    //     _this.serversArray.push(_this.server5);
+    //   });
+    // };
+    // this.getServer5();
 
-    this.getServer6 = function() {
-      var url = 'http://localhost:3300/ping/server/irrelevent/verbose';
-      HTTPService.get(url, function(data){
-        _this.server6 = data;
-        _this.serversArray.push(_this.server6);
-      });
-    };
-    this.getServer6();
+    // this.getServer6 = function() {
+    //   var url = 'http://uatfms3.amsoscar.com:3300/ping/server/irrelevent/verbose';
+    //   HTTPService.get(url, function(data){
+    //     _this.server6 = data;
+    //     _this.serversArray.push(_this.server6);
+    //   });
+    // };
+    // this.getServer6();
 
     // module calls
-    this.getOscLogger = function() {
-      var url = 'http://localhost:3300/ping/module/oscLogger/verbose';
+    this.getOscLogger = function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/oscLogger/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.oscLogger = data;
-        _this.modulesArray.push(_this.oscLogger);
+        _this.serversArray[index].modulesArray.push(_this.oscLogger);
       });
     };
-    this.getOscLogger();
 
-    this.getWorkflowManager = function() {
-      var url = 'http://localhost:3300/ping/module/workflowManager/verbose';
+    this.getWorkflowManager = function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/workflowManager/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.workflowManager = data;
-        _this.modulesArray.push(_this.workflowManager);
+        _this.serversArray[index].modulesArray.push(_this.workflowManager);
       });
     };
-    this.getWorkflowManager();
 
-    this.getHttpApi = function() {
-      var url = 'http://localhost:3300/ping/module/httpAPI/verbose';
+    this.getHttpApi = function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/httpAPI/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.httpApi = data;
-        _this.modulesArray.push(_this.httpApi);
+        _this.serversArray[index].modulesArray.push(_this.httpApi);
       });
     };
-    this.getHttpApi();
 
-    this.getEncoder= function() {
-      var url = 'http://localhost:3300/ping/module/encoder/verbose';
+    this.getEncoder= function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/encoder/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.encoder = data;
-        _this.modulesArray.push(_this.encoder);
+        _this.serversArray[index].modulesArray.push(_this.encoder);
       });
     };
-    this.getEncoder();
 
-    this.getImageProcessor = function() {
-      var url = 'http://localhost:3300/ping/module/imageProcessor/verbose';
+    this.getImageProcessor = function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/imageProcessor/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.imageProcessor = data;
-        _this.modulesArray.push(_this.imageProcessor);
+        _this.serversArray[index].modulesArray.push(_this.imageProcessor);
       });
     };
-    this.getImageProcessor();
 
-    this.getHttpNotifier = function() {
-      var url = 'http://localhost:3300/ping/module/httpNotifier/verbose';
+    this.getHttpNotifier = function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/httpNotifier/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.httpNotifier = data;
-        _this.modulesArray.push(_this.httpNotifier);
+        _this.serversArray[index].modulesArray.push(_this.httpNotifier);
       });
     };
-    this.getHttpNotifier();
 
-    this.getFileManager = function() {
-      var url = 'http://localhost:3300/ping/module/fileManager/verbose';
+    this.getFileManager = function(theServer, index) {
+      var url = 'http://' + theServer + '/ping/module/fileManager/verbose';
+      _this.serversArray[index].modulesArray = [];
       HTTPService.get(url, function(data){
         _this.fileManager = data;
-        _this.modulesArray.push(_this.fileManager);
+        _this.serversArray[index].modulesArray.push(_this.fileManager);
       });
     };
-    this.getFileManager();
 
-    //executions
-    this.getExecutions = function() {
-      var url = 'http://localhost:3300/status/complete';
+    this.getData = function($event, index) {
+      var thisServer = _this.serversArray[index].message.hostname;
+      console.log(thisServer);
+
+      this.getOscLogger(thisServer, index);
+      this.getWorkflowManager(thisServer, index);
+      this.getHttpApi(thisServer, index);
+      this.getEncoder(thisServer, index);
+      this.getImageProcessor(thisServer, index);
+      this.getHttpNotifier(thisServer, index);
+      this.getFileManager(thisServer, index);
+    };
+
+    this.getExecutions = function($event, index) {
+      var thisServer = _this.serversArray[index].message.hostname;
+      var url = 'http://' + thisServer + '/status/all';
+
       HTTPService.get(url, function(data){
-        _this.executions = data;
-        var executionResult = _this.executions.executions;
+        _this.serversArray[index].executions = data;
+        _this.getExecutionPingUrls($event, index);
+      });
+    };
+
+    this.getExecutionPingUrls = function($event, index) {
         var justUrls = [];
         var copyValue = {};
+        var executionResult = _this.serversArray[index].executions.executions;
 
         angular.forEach(executionResult, function(value, key) {
           //iterate over the key/value pairs of each execution
@@ -147,32 +167,37 @@ angular.module('ServerList', ['SharedHTTP'])
           angular.forEach(copyValue, function(v, k) {
             // find the urls for execution
             if (k === 'ping') {
-              return;
+                  return;
             } else if (k === 'restart') {
-              return;
+                  return;
             } else if (k === 'kill') {
-              return;
+                  return;
             } else if (k === 'pause') {
-              return;
+                  return;
             } else if (k === 'resume') {
-              return;
+                  return;
             } else if (k === 'force') {
-              return;
+                  return;
             } else {
-              delete copyValue[k]
+                  delete copyValue[k]
             }
           });
           justUrls.push(copyValue);
         });
         _this.onlyExecutionUrls = justUrls;
-      });
+        this.checkServerData($event, index);
     };
-    this.getExecutions();
+
+    this.checkServerData = function($event, index) {
+      if (typeof(_this.serversArray[index].modulesArray) === 'undefined') {
+        this.getData($event, index);
+        this.getExecutions($event, index);
+      } else {
+        this.showBottomSheet($event, index);
+      }
+    }
 
     this.showBottomSheet = function($event, index) {
-      // var serversArray = _this.server1 + _this.server2 + _this.server3 + _this.server4 + _this.server5 + _this.server6;
-      // var modulesArray = _this.oscLogger + _this.workflowManager + _this.httpApi + _this.encoder + _this.imageProcessor + _this.httpNotifier + _this.fileManager;
-
       $mdBottomSheet.show({
         templateUrl: 'serverList/templates/serverListBottomSheet.html',
         controller: 'ServerListBottomSheetCtrl',
@@ -181,210 +206,42 @@ angular.module('ServerList', ['SharedHTTP'])
           // thisServer: _this.allServers[index],
           thisServer: _this.serversArray[index],
           servers: _this.serversArray,
-          modules: _this.modulesArray,
-          thisExecution: _this.executions[index],
-          executions: _this.executions,
-          executionUrls: _this.onlyExecutionUrls,
-          thisExecutionUrl: _this.onlyExecutionUrls[index],
-          thisExecutionPing: $scope.executionPing
+          modules: _this.serversArray[index].modulesArray,
+          executions: _this.serversArray[index].executions,
+          // thisExecution: _this.executions[index],
+          executionUrls: _this.onlyExecutionUrls
+          // thisExecutionUrl: _this.onlyExecutionUrls[index]
+          // thisExecutionPing: _this.executionPing
         }
       });
     };
 
-    // this.serverStatusImg = function(index) {
-    //   var serversObj = _this.server1 + _this.server2 + _this.server3 + _this.server4 + _this.server5 + _this.server6;
-    //   var thisServer = serversObj[index];
-    //   console.log('thisServer: ' + thisServer);
+    this.serverStatusImg = function(index) {
+      var thisServer = _this.serversArray[index];
 
-    //   if(thisServer.message.status == 'good'){
-    //     return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-    //   } else if(thisServer.message.status == 'warn') {
-    //     return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-    //   } else if(thisServer.message.status == 'error'){
-    //     return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
-    //   } else {
-    //     return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-    //   }
-    // };
+      if(thisServer.message.status == 'good'){
+        return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+      } else if(thisServer.message.status == 'warn') {
+        return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
+      } else if(thisServer.message.status == 'error'){
+        return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
+      } else {
+        return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+      }
+    };
 
     this.servers = _this.serversArray;
-    //   {
-    //     name: "Server One",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Full Stack", "Clips"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 3,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK', steps: [
-    //             {label: 'Create Media Directories', status: 'OK', tasks: [
-    //               {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-    //             ]},
-    //             {label: 'Live Encode', status: 'OK', tasks: [
-    //               {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-    //             ]},
-    //             {label: 'Upload Stream and Create Spritesheet', status: 'OK', tasks: [
-    //               {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'imgProcessor', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'httpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-    //             ]},
-    //             {label: 'Upload VTT', status: 'OK', tasks: [
-    //               {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-    //             ]},
-    //             {label: 'Upload Thumbnails', status: 'OK', tasks: [
-    //               {id: 'fileManager', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'imgProcessor', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'httpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-    //             ]},
-    //             {label: 'Upload Thumbnails', status: 'OK', tasks: [
-    //               {id: 'encoder', status: 'OK', error: 'This is the task error output - its very informative, right?'},
-    //               {id: 'nttpNotifier', status: 'OK', error: 'This is the task error output - its very informative, right?'}
-    //             ]}
-    //           ]},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   },
-    //   {
-    //     name: "Server Two",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Live", "Encode"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 1,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK'},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   },
-    //   {
-    //     name: "Server Three",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Full Stack", "Clips"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 3,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK'},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   },
-    //   {
-    //     name: "Server Four",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Clips"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 3,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK'},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   },
-    //   {
-    //     name: "Server Five",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Full Stack", "Clips", "Live Encode"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 1,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK'},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   },
-    //   {
-    //     name: "Server Six",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Full Stack", "Clips"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 2,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK'},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   },
-    //   {
-    //     name: "Server Seven",
-    //     host: "uatfms.amsoscar.com",
-    //     roles: ["Full Stack"],
-    //     ip: "76.120.70.39",
-    //     uptime: "36d 8h 29m",
-    //     diskUsage: "38%",
-    //     status: 1,
-    //     executions: [
-    //           {execId: 1433276102578, status: 'OK'},
-    //           {execId: 1433276141541, status: 'OK'},
-    //           {execId: 1433276104647, status: 'OK'},
-    //           {execId: 1433276102578, status: 'OK'},
-    //         ]
-    //   }
-    // ];
-
-  //   this.modules = [
-  //         {
-  //           moduleName: "module name 1",
-  //           status: "ok",
-  //           completedTasks: 78,
-  //           inProgressTasks: 2,
-  //           inQueueTasks: 23,
-  //           erroredTasks: 0
-  //         },
-  //         {
-  //           moduleName: "module name 2",
-  //           status: "ok",
-  //         },
-  //         {
-  //           moduleName: "module name 3",
-  //           status: "warn",
-  //         },
-  //         {
-  //           moduleName: "module name 4",
-  //           status: "err",
-  //         },
-  //         {
-  //           moduleName: "module name 5",
-  //           status: "ok",
-  //         },
-  //         {
-  //           moduleName: "module name 6",
-  //           status: "ok",
-  //         },
-  //         {
-  //           moduleName: "module name 7",
-  //           status: "ok",
-  //         }
-  //       ];
 
   }])
 
-  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', 'servers', 'thisServer', 'modules', 'executions', 'thisExecution', 'executionUrls', '$http',
-    function($scope, $mdBottomSheet, $mdDialog, servers, thisServer, modules, executions, thisExecution, executionUrls, $http) {
+  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', '$http', 'servers', 'thisServer', 'modules', 'executions', 'executionUrls',
+    function($scope, $mdBottomSheet, $mdDialog, $http, servers, thisServer, modules, executions, executionUrls) {
 
     $scope.server = servers;
     $scope.thisServer = thisServer;
-    $scope.modules= modules;
+    $scope.modules = modules;
     $scope.executions = executions;
+
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();

@@ -1,5 +1,5 @@
 /*
-Module Dependencies 
+Module Dependencies
 */
 var express = require('express'),
     http = require('http'),
@@ -27,7 +27,7 @@ var UserSchema = new mongoose.Schema({
 
 var User = mongoose.model('users', UserSchema);
 /*
-Middlewares and configurations 
+Middlewares and configurations
 */
 // var csrfValue = function(req) {
 //   var token = (req.body && req.body._csrf)

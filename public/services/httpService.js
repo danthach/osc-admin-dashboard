@@ -1,13 +1,12 @@
 
 angular.module('SharedHTTP', [])
 
-.factory('HTTPService', ['$http', function($http) {
-
+.factory('HTTPService', ['$http', '$q', function($http, $q) {
   return {
 
     get: function(url, callback){
         $http.get(url).success(function(data) {
-        //console.log('Success getting ' + url + ' Data = ', data);
+        console.log('Success getting ' + url + ' Data = ', data);
         callback(data);
       }).
        error(function(data, status, headers, config) {
@@ -15,6 +14,15 @@ angular.module('SharedHTTP', [])
           callback(false);
         });
     },
+
+    // jsonp: function(url, callback) {
+    //     $http.jsonp(url).success(function(data) {
+    //       console.log(data)
+    //     }).
+    //     error(function(data, status, headers, config) {
+    //       console.error('error with GET.' + status, data);
+    //     })
+    // },
 
     post: function(data, url, callback) {
         $http.post(url, data).

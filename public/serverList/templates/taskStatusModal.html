@@ -8,16 +8,18 @@
   <md-dialog-content>
     <md-card>
       <md-card-content>
-        <p>Error</p>
-        {{thisTask.error}}
-      </md-card-content>
-      <md-card-content>
-        <p>Priority</p>
-        {{thisTask.priority}}
-      </md-card-content>
-      <md-card-content>
-        <p>Timeout Length</p>
-        {{thisTask.timeoutLength}}
+      <table class="table table-striped text-center">
+          <tr>
+            <th>Error</th>
+            <th>Priority</th>
+            <th>Timeout Length</th>
+          </tr>
+          <tr>
+            <th>{{thisTask.error}}</th>
+            <th>{{thisTask.priority}}</th>
+            <th>{{thisTask.timeoutLength}}</th>
+          </tr>
+      </table>
       </md-card-content>
     </md-card>
   </md-dialog-content>
