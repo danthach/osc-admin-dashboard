@@ -10,13 +10,14 @@
     <md-card>
       <md-card-content>
         <div ng-repeat="(key, value) in thisModule.message | without:'status'">
-          <h3>{{key}}</h3>
           <table class="table table-striped text-center">
+            <h3>{{key}}</h3>
               <tr>
                 <th>Completed</th>
                 <th>In Progress</th>
                 <th>In Queue</th>
                 <th>Errored</th>
+                <th></th>
               </tr>
               <tr>
                 <td>{{value.completed}}</td>
@@ -24,6 +25,16 @@
                 <td>{{value.queue}}</td>
                 <td>{{value.errored}}</td>
               </tr>
+          </table>
+        </div>
+        <div ng-repeat="(key, value) in thisModule.message | only:'status'">
+          <table class="table table-striped text-center">
+            <tr>
+              <th>Status</th>
+            </tr>
+            <tr>
+              <td>{{value}}</td>
+            </tr>
           </table>
         </div>
       </md-card-content>

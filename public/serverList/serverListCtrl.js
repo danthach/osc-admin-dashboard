@@ -326,6 +326,9 @@ angular.module('ServerList', ['SharedHTTP'])
 
     $scope.showModuleDetails = function(event, index) {
       $scope.thisModule = $scope.modules[index];
+      if ($scope.thisModule.entityID === "workflowManager") {
+        $scope.thisModule.message.total['queue'] = 'n/a';
+      }
 
       $mdDialog.show({
         controller: 'ModuleDetailsModalCtrl',
@@ -341,6 +344,13 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.showTaskDetails = function(event, index) {
       $scope.thisTask = $scope.thisStep.tasks[index];
       console.log($scope.thisTask);
+      angular.forEach($scope.thisTask, function(value, key) {
+        if (typeof value === "undefined") {
+          $scope.thisTask[key] = "undefined";
+        } else if (value === null) {
+          $scope.thisTask[key] = "null";
+        }
+      });
 
       $mdDialog.show({
         controller: 'TaskStatusModalCtrl',
@@ -432,13 +442,29 @@ angular.module('ServerList', ['SharedHTTP'])
   .filter('without', function() {
     return function(items, field) {
       var result = {};
-      angular.forEach(items, function(value, key) {
-        if (key !== field) {
-          result[key] = value;
-        }
-      });
+      if(items !== undefined) {
+        angular.forEach(items, function(value, key) {
+          if (key !== field) {
+            result[key] = value;
+          }
+        });
+      } else {
+        result = {};
+      }
       return result;
     };
+  })
+
+  .filter('only', function() {
+    return function(items, field) {
+      if(items !== undefined) {
+        if(Object.keys(items).length === 1) {
+          return items;
+        }
+      } else {
+        return {status:'Module not found.'};
+      }
+    }
   })
 
   .filter('secondsToTimeString', function() {

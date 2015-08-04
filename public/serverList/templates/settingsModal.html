@@ -2,11 +2,10 @@
   <form>
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>{{thisModule.entityID}} Details</h2>
+      <h2>{{executionPing.entityID}} Details</h2>
     </div>
   </md-toolbar>
   <md-dialog-content>
-    <p>{{thisModule.date | date:'medium'}}</p>
     <md-card>
       <md-card-content>
         <div ng-repeat="(key, value) in executionPing.message.executionDetails | with:'settingsObj'">
