@@ -12,7 +12,7 @@
       &#xE888;
     </i>
   </div>
-  <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'status' | filter:s as results">
+  <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'message.status' | filter:s as results">
   	<md-card class="server-status-card" ng-click="serverListCtrl.checkServerData($event, $index)">
     		<md-card-content>
           <div class="server-status-img"

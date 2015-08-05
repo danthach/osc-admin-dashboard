@@ -6,7 +6,7 @@
 		<div class="server-detail-info" flex="100">
 			<h2>{{thisServer.message.hostname}}</h2>
 			<p>
-				IP Address: &nbsp;<span>{{thisServer.message.ip}}</span>
+				IP Address: &nbsp;<span>{{thisServer.ip}}</span>
 				Uptime: &nbsp;<span>{{thisServer.message.uptime | secondsToTimeString}}</span>
 				<!-- Hostname: &nbsp;<span>{{server.host}}</span>
 				Roles: &nbsp;<span>{{server.roles}}</span> -->
@@ -86,9 +86,6 @@
 						          		<td>{{value.label}}</td>
 						          		<td>{{value.status}}</td>
 						          	</tr>
-						          	<tr ng-show="!thisExecution.steps">
-						          		<td>Select an Execution...</td>
-						          	</tr>
 						        </table>
 					    	</md-card-content>
 					    </md-card>
@@ -116,10 +113,9 @@
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
 						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as results" ng-click="showTaskDetails($event, $index)">
-						          		<td>{{value.stepID}}</td>
 						          		<td>{{value.type}}</td>
 						          		<td>{{value.status}}</td>
-						          		<td class="button-cell">
+<!-- 						          		<td class="button-cell">
 								          	<button class="md-raised md-button md-default-theme" ng-click="killTask($event, $index)" flex>
 										    			<span class="ng-scope">KILL</span>
 										    			<div class="md-ripple-container"></div>
@@ -128,7 +124,7 @@
 										    			<span class="ng-scope">FORCE</span>
 										    			<div class="md-ripple-container"></div>
 										    		</button>
-										    	</td>
+										    	</td> -->
 						          	</tr>
 						          	<tr ng-show="!thisStep.tasks">
 						          		<td>Select a Step...</td>
@@ -142,7 +138,7 @@
 					    	<md-card-content id="module-action-card" layout="row">
 					    		<div ng-repeat="(key, value) in thisExecutionUrl">
 						    		<button class="md-raised md-primary md-button md-default-theme" flex>
-                      <span class="ng-scope"><a ng-href="{{value}}">{{key}}</a></span>
+                      <span class="ng-scope"><a ng-href="{{value}}" target="_blank">{{key}}</a></span>
 						    			<div class="md-ripple-container"></div>
 						    		</button>
 						    	</div>

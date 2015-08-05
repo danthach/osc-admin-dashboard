@@ -14,20 +14,20 @@ angular.module('ServerList', ['SharedHTTP'])
     // };
     // this.getServerData();
 
-    this.secondsToHMS = function(d) {
-      d = Number(d);
-      var h = Math.floor(d / 3600);
-      var m = Math.floor(d % 3600 / 60);
-      var s = Math.floor(d % 3600 % 60);
-      return ((h > 0 ? (h >= 10 ? h : '0' + h): '00') + ':' + (m > 0 ? (m >= 10 ? m : '0' + m): '00') + ':' + (s > 0 ? (s >= 10 ? s : '0' + s): '00')  );
-    };
+    // this.secondsToHMS = function(d) {
+    //   d = Number(d);
+    //   var h = Math.floor(d / 3600);
+    //   var m = Math.floor(d % 3600 / 60);
+    //   var s = Math.floor(d % 3600 % 60);
+    //   return ((h > 0 ? (h >= 10 ? h : '0' + h): '00') + ':' + (m > 0 ? (m >= 10 ? m : '0' + m): '00') + ':' + (s > 0 ? (s >= 10 ? s : '0' + s): '00')  );
+    // };
 
     //server calls
     this.getServer1 = function() {
       var url = 'http://54.197.231.168:3300/ping/server/irrelevent/verbose';
       HTTPService.get(url, function(data){
         _this.server1 = data;
-        //_this.server1.message.uptime = _this.secondsToHMS(_this.server1.message.uptime);
+        _this.server1['ip'] = '54.197.231.168:3300';
         _this.serversArray.push(_this.server1);
       });
     };
@@ -37,7 +37,7 @@ angular.module('ServerList', ['SharedHTTP'])
       var url = 'http://redevfms1.amsoscar.com:3300/ping/server/irrelevent/verbose';
       HTTPService.get(url, function(data){
         _this.server2 = data;
-        //_this.server2.message.uptime = _this.secondsToHMS(_this.server2.message.uptime);
+        _this.server2['ip'] = '123.111.222.333:3300';
         _this.serversArray.push(_this.server2);
       });
     };
