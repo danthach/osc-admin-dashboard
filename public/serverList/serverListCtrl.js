@@ -3,24 +3,6 @@ angular.module('ServerList', ['SharedHTTP'])
 
     var _this = this;
     _this.serversArray = [];
-    // _this.serversArray[index] = 0;
-    // _this.serversArray[index].modulesArray = [];
-
-    // this.getServerData = function() {
-    //   var url = 'servers.json';
-    //   HTTPService.get(url, function(data){
-    //     _this.allServers = data;
-    //   });
-    // };
-    // this.getServerData();
-
-    // this.secondsToHMS = function(d) {
-    //   d = Number(d);
-    //   var h = Math.floor(d / 3600);
-    //   var m = Math.floor(d % 3600 / 60);
-    //   var s = Math.floor(d % 3600 % 60);
-    //   return ((h > 0 ? (h >= 10 ? h : '0' + h): '00') + ':' + (m > 0 ? (m >= 10 ? m : '0' + m): '00') + ':' + (s > 0 ? (s >= 10 ? s : '0' + s): '00')  );
-    // };
 
     //server calls
     this.getServer1 = function() {
@@ -257,31 +239,6 @@ angular.module('ServerList', ['SharedHTTP'])
       $mdBottomSheet.hide();
     };
 
-    // $scope.filterUrls = function(items) {
-    //     var result = [];
-    //     var executionUrls = [];
-
-    //     angular.forEach(items, function(value, key) {
-    //       angular.forEach(value, function(v, k) {
-    //         if (k === 'ping') {
-    //           result.push({'ping':v});
-    //         } else if (k === 'pause') {
-    //           result.push({'pause':v});
-    //         } else if (k === 'resume') {
-    //           result.push({'resume':v});
-    //         } else if (k === 'force') {
-    //           result.push({'force':v});
-    //         } else if (k === 'kill') {
-    //           result.push({'kill':v});
-    //         } else if (k === 'restart') {
-    //           result.push({'restart':v});
-    //         }
-    //       });
-    //       executionUrls.push(result);
-    //     });
-    //     return result;
-    // };
-
     $scope.moduleStatusImg = function(index) {
       if($scope.modules[index].message){
         if($scope.modules[index].message.status == 'warn'){
@@ -295,13 +252,6 @@ angular.module('ServerList', ['SharedHTTP'])
         return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
       }
     };
-
-    // $scope.selectModule = function(index) {
-    //   $scope.thisModule = $scope.server.modules[index];
-    //   $scope.thisExecution = undefined;
-    //   $scope.thisStep = undefined;
-    //   $scope.thisTask = undefined;
-    // };
 
     $scope.selectExecution = function(index) {
       $scope.thisExecution = executions.executions[index];
@@ -390,17 +340,6 @@ angular.module('ServerList', ['SharedHTTP'])
 
       alert('Force Task "' + $scope.thisStep.tasks[index].id + '" in Step "' + $scope.thisStep.label + '" in Execution "' + $scope.thisExecution.execId + '"');
     };
-
-
-    // $scope.smallServerStatusImg = function() {
-    //   if($scope.server.status == 'ok'){
-    //     return 'img/server-ok-sm.png';
-    //   } else if($scope.server.status == 'warn') {
-    //     return 'img/server-warn-sm.png';
-    //   } else if($scope.server.status == 'err'){
-    //     return 'img/server-err-sm.png';
-    //   }
-    // }
 
   }])
   .controller('TaskStatusModalCtrl',['$scope', '$mdDialog', 'thisTask',
