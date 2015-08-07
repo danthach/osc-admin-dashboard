@@ -15,13 +15,12 @@
   <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'message.status' | filter:s as results">
   	<md-card class="server-status-card" ng-click="serverListCtrl.checkServerData($event, $index)">
     		<md-card-content>
-          <div class="server-status-img"
-               ng-class="{'status-ok': true, 'status-warn': server.status == 2, 'status-err': server.status == 1}">
+          <div class="server-status-img" ng-style="{{serverStatusImg($index)}}">
           </div>
-      		<h3 class="server-host">{{server.message.hostname}}</h3>
-          <h3 class="server-roles">{{server.type}}</h3>
+      		<h5 class="server-host">{{server.message.hostname}}</h5>
+          <h3 class="server-roles">{{server.ip}}</h3>
           <hr/>
-          <h3 class="server-roles" ng-repeat="role in server.roles">{{role}}</h3>
+          <h3 class="server-roles">{{server.roles}}</h3>
     		</md-card-content>
     </md-card>
   </div>

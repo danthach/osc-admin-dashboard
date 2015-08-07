@@ -18,11 +18,11 @@
 		    <md-tabs md-dynamic-height md-border-bottom>
 		      <md-tab label="modules">
 		      	<md-content layout="row" layout-wrap>
-			      	<div flex="20" ng-repeat="module in modules">
-					  	<md-card class="module-status-card" ng-click="showModuleDetails($event, $index)">
+			      	<div flex="20" ng-repeat="(key, value) in modules">
+					  	<md-card class="module-status-card" ng-click="getModuleDetails($event)">
 					    	<md-card-content>
-					            <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
-					      		<h3 class="server-host">{{module.entityID}}</h3>
+					        <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
+					      	<h3 class="server-host">{{key}}</h3>
 					    	</md-card-content>
 					    </md-card>
 					</div>

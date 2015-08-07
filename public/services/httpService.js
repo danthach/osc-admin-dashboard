@@ -15,14 +15,15 @@ angular.module('SharedHTTP', [])
         });
     },
 
-    // jsonp: function(url, callback) {
-    //     $http.jsonp(url).success(function(data) {
-    //       console.log(data)
-    //     }).
-    //     error(function(data, status, headers, config) {
-    //       console.error('error with GET.' + status, data);
-    //     })
-    // },
+    jsonp: function(url, callback) {
+        $http.jsonp(url).success(function(data) {
+          console.log(data);
+          callback(data);
+        }).
+        error(function(data, status, headers, config) {
+          console.error('error with GET.' + status, data);
+        })
+    },
 
     post: function(data, url, callback) {
         $http.post(url, data).
