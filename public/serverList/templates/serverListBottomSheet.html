@@ -6,11 +6,11 @@
 		<div class="server-detail-info" flex="100">
 			<h2>{{thisServer.message.hostname}}</h2>
 			<p>
-				IP Address: &nbsp;<span>{{thisServer.ip}}</span>
-				Uptime: &nbsp;<span>{{thisServer.message.uptime | secondsToTimeString}}</span>
+				IP Address: <span>{{thisServer.ip}}</span>
+				&nbsp;&nbsp;Uptime: <span>{{thisServer.message.uptime | secondsToTimeString}}</span>
 				<!-- Hostname: &nbsp;<span>{{server.host}}</span>
 				Roles: &nbsp;<span>{{server.roles}}</span> -->
-				Disk Usage: &nbsp;<span>{{thisServer.message.diskUsage}}%</span>
+				&nbsp;&nbsp;Disk Usage: <span>{{thisServer.message.diskUsage}}%</span>
 			</p>
 		</div>
 		<div flex="100">
@@ -19,59 +19,67 @@
 		      <md-tab label="modules">
 		      	<md-content layout="row" layout-wrap>
 			      	<div flex="20" ng-repeat="(key, value) in modules">
-					  	<md-card class="module-status-card" ng-click="getModuleDetails($event)">
-					    	<md-card-content>
-					        <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
-					      	<h3 class="server-host">{{key}}</h3>
-					    	</md-card-content>
-					    </md-card>
-					</div>
-				</md-content>
+						  	<md-card class="module-status-card" ng-click="getModuleDetails($event)">
+						    	<md-card-content>
+						        <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
+						      	<h3 class="server-host">{{key}}</h3>
+						    	</md-card-content>
+						    </md-card>
+							</div>
+						</md-content>
 		      </md-tab>
 		      <md-tab label="executions">
 		      	<md-content layout="row" layout-wrap>
 		      		<div flex="33">
-					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, indexExec)">
 					    	<md-card-content layout="column">
-					    		<div class="exec-card-header" flex>
+					    				<div class="exec-card-header" flex>
 					            	<h2>EXECUTIONS</h2>
 					            	<p ng-show="!showExecSearch" ng-click="showExecSearch = !showExecSearch">
 					            		<i class="material-icons">&#xE8B6;</i>
 					            		SEARCH
 					            	</P>
-					            	<span class="material-icons"
-					            	      ng-show="showExecSearch"
-					            	      ng-click="showExecSearch = !showExecSearch; e = ''">
+					            	<span class="material-icons" ng-show="showExecSearch" ng-click="showExecSearch = !showExecSearch; e = ''">
 					            		&#xE888;
 					            	</span>
 					            </div>
 					            <div class="exec-search-box" ng-show="showExecSearch" flex>
 					            	<md-input-container flex>
-							          <label>Search Executions...</label>
-							          <input ng-model="e">
-							        </md-input-container>
+								          <label>Search Executions...</label>
+								          <input ng-model="e">
+								        </md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in executions.executions | filter:e as results" ng-click="selectExecution($index)">
-						          		<td>{{value.executionID}}</td>
-						          		<td>{{value.status}}</td>
+						          	<tr ng-repeat="(key, value) in executions.executions | filter:e as resultsExec" ng-click="selectExecution(key, resultsExec, e)" ng-class="highlightSelectedExec(key)">
+						          		<td>
+							          		<table class="table-hover clickable-table">
+							          			<tr>
+							          				<td colspan="2" class="td-width small-font italic">{{value.type}}</td>
+							          			</tr><tr>
+							          				<td class="td-width">{{value.executionID}}</td>
+							          				<td>{{value.status}}</td>
+							          			</tr><tr>
+							          				<td class="small-font" colspan="2">Start: {{value.startDate | dateString}} &nbsp;&nbsp;&nbsp;End: {{value.endDate | dateString}}</td>
+							          			</tr>
+							          		</table>
+							          	</td>
 						          	</tr>
 						        </table>
 					    	</md-card-content>
 					    </md-card>
 					</div>
 			        <div flex="33">
-					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, indexStep)">
 					    	<md-card-content layout="column">
-					    		<div class="exec-card-header" flex>
+					    				<div class="exec-card-header" flex>
 					            	<h2>STEPS</h2>
-					            	<p ng-show="!showStepSearch && thisExecution.steps" ng-click="showStepSearch = !showStepSearch">
+					            	<p ng-show="!showStepSearch && executionPing.message.executionDetails.steps" ng-click="showStepSearch = !showStepSearch">
 					            		<i class="material-icons">&#xE8B6;</i>
 					            		SEARCH
 					            	</p>
 					            	<span class="material-icons"
-					            	      ng-show="showStepSearch"
-					            	      ng-click="showStepSearch = !showStepSearch; s = ''">
+					            		  ng-show="showStepSearch"
+					            		  ng-click="showStepSearch = !showStepSearch; t = ''">
 					            		&#xE888;
 					            	</span>
 					            </div>
@@ -79,21 +87,24 @@
 					            	<md-input-container flex>
 							          <label>Search Steps...</label>
 							          <input ng-model="s">
-							        </md-input-container>
+							        	</md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in executionPing.message.executionDetails.steps" ng-click="selectStep($index)">
+						          	<tr ng-repeat="(key, value) in executionPing.message.executionDetails.steps| filter:s as resultsStep" ng-click="selectStep(key)" ng-class="highlightSelectedStep(key)">
 						          		<td>{{value.label}}</td>
 						          		<td>{{value.status}}</td>
+						          	</tr>
+						          	<tr ng-show="!executionPing.message.executionDetails.steps">
+						          		<td>Select a Task...</td>
 						          	</tr>
 						        </table>
 					    	</md-card-content>
 					    </md-card>
 					</div>
 					<div flex="33">
-					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, $index)">
+					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, indexTask)">
 					    	<md-card-content layout="column">
-					    		<div class="exec-card-header" flex>
+					    				<div class="exec-card-header" flex>
 					            	<h2>TASKS</h2>
 					            	<p ng-show="!showTaskSearch && thisStep.tasks" ng-click="showTaskSearch = !showTaskSearch">
 					            		<i class="material-icons">&#xE8B6;</i>
@@ -109,10 +120,10 @@
 					            	<md-input-container flex>
 							          <label>Search Tasks...</label>
 							          <input ng-model="t">
-							        </md-input-container>
+							        	</md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as results" ng-click="showTaskDetails($event, $index)">
+						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as resultsTask" ng-click="showTaskDetails($event, key)" ng-class="highlightSelectedTask(key)">
 						          		<td>{{value.type}}</td>
 						          		<td>{{value.status}}</td>
 <!-- 						          		<td class="button-cell">
@@ -136,15 +147,26 @@
 					<div flex="100">
 					  	<md-card>
 					    	<md-card-content id="module-action-card" layout="row">
-					    		<div ng-repeat="(key, value) in thisExecutionUrl">
+					    		<div ng-repeat="(key, value) in thisExecutionUrl | filter:e as resultsExec">
 						    		<button class="md-raised md-primary md-button md-default-theme" flex>
                       <span class="ng-scope"><a ng-href="{{value}}" target="_blank">{{key}}</a></span>
 						    			<div class="md-ripple-container"></div>
 						    		</button>
-						    	</div>
-					    			<button class="md-raised md-primary md-button md-default-theme" ng-click="showSettings($event, $index)">SETTINGS</button>
+					    		</div>
+					    		<button class="md-raised md-primary md-button md-default-theme" ng-click="showSettings($event, key)" ng-show="thisExecutionUrl">SETTINGS</button>
 					    	</md-card-content>
 					    </md-card>
+<!-- 					    <md-card>
+						  	<md-card-content id="module-action-card" layout="row">
+						    	<div ng-repeat="(key, value) in thisExecutionUrl | filter:e as results">
+							    	<button class="md-raised md-primary md-button md-default-theme" flex>
+		                  <span class="ng-scope"><a ng-href="{{value}}" target="_blank">{{key}}</a></span>
+								   		<div class="md-ripple-container"></div>
+								 		</button>
+								 	</div>
+					    		<button class="md-raised md-primary md-button md-default-theme" ng-click="showSettings($event, key)">SETTINGS</button>
+					    	</md-card-content>
+					    </md-card> -->
 					</div>
 			    </md-content>
 		      </md-tab>

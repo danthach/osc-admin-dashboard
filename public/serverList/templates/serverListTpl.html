@@ -12,13 +12,14 @@
       &#xE888;
     </i>
   </div>
+  <div id="feedLoading" ng-show="serverListCtrl.isLoading"> </div>
   <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'message.status' | filter:s as results">
-  	<md-card class="server-status-card" ng-click="serverListCtrl.checkServerData($event, $index)">
+  	<md-card class="server-status-card" ng-click="serverListCtrl.checkServerData($event, server, $index)">
     		<md-card-content>
-          <div class="server-status-img" ng-style="{{serverStatusImg($index)}}">
+          <div class="server-status-img" ng-style="{{serverStatusImg(server)}}">
           </div>
-      		<h5 class="server-host">{{server.message.hostname}}</h5>
-          <h3 class="server-roles">{{server.ip}}</h3>
+      		<h3 class="server-host">{{server.hostname}}</h3>
+          <h5 class="server-roles">{{server.ip}}</h5>
           <hr/>
           <h3 class="server-roles">{{server.roles}}</h3>
     		</md-card-content>

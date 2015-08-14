@@ -10,12 +10,16 @@
       <md-card-content>
       <table class="table table-striped text-center">
           <tr>
+            <th>Execution ID</th>
             <th>Error</th>
+            <th>Failure Count</th>
             <th>Priority</th>
             <th>Timeout Length</th>
           </tr>
           <tr>
+            <th>{{thisTask.executionID}}</th>
             <th>{{thisTask.error}}</th>
+            <th>{{thisTask.failureCount}}</th>
             <th>{{thisTask.priority}}</th>
             <th>{{thisTask.timeoutLength}}</th>
           </tr>

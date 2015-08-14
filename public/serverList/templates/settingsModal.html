@@ -9,7 +9,7 @@
     <md-card>
       <md-card-content>
         <div ng-repeat="(key, value) in executionPing.message.executionDetails | with:'settingsObj'">
-          <h3>{{value}}</h3>
+          <p class="pre">{{value | prettyJSON}}</p>
         </div>
       </md-card-content>
     </md-card>

@@ -1,3 +1,6 @@
+.italic {
+  font-style: italic;
+}
 i {
   vertical-align: middle;
 }
@@ -41,6 +44,19 @@ i {
   font-size: 12px;
   line-height: 24px;
   color: rgb(244,67,54);
+}
+#feedLoading {
+  margin:0 auto;
+  width:130px;
+  height:130px;
+  position:absolute;
+  left:50%;
+  top:70%;
+  margin:-100px 0 0 -100px;
+  cursor: not-allowed;
+  opacity: 0.6;
+  filter: alpha(opacity=60); /* For IE8 and earlier */
+  background: url(/img/spinner.gif) no-repeat;
 }
 #server-search i {
   vertical-align: middle;
@@ -135,7 +151,12 @@ i {
 #module-details-modal table, #module-details-modal th {
   text-align: center;
 }
-
+.highlight-select {
+  background-color: #eee;
+}
+.small-font {
+  font-size: 10px;
+}
 .exec-card-header h2 {
   float: left;
 }
@@ -242,10 +263,15 @@ i {
   clear: both;
 }
 
+.pre {
+  white-space: pre;
+}
+
 /* TABLE STYLES */
 table {
   border-spacing: 0;
   border-collapse: collapse;
+  width:100%;
 }
 td,
 th {
@@ -263,6 +289,9 @@ caption {
 th {
   text-align: left;
 }
+table > tbody > tr > td.td-width {
+  width:75%;
+}
 .table {
   width: 100%;
   max-width: 100%;
@@ -278,6 +307,9 @@ th {
   line-height: 1.42857143;
   vertical-align: top;
   border-top: 1px solid #ddd;
+}
+.table > tbody > tr > td.no-border {
+  border-top:none;
 }
 .table > thead > tr > th {
   vertical-align: bottom;
@@ -491,3 +523,6 @@ table th[class*="col-"] {
     border-bottom: 0;
   }
 }
+
+button .ng-scope a.ng-binding {color:white; text-decoration: none;}
+.md-content-overflow {overflow: hidden;}

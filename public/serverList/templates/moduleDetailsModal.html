@@ -6,10 +6,10 @@
     </div>
   </md-toolbar>
   <md-dialog-content>
-    <p>Module Stats Since: {{thisModule.date | date:'medium'}}</p>
+    <p>Module Stats Since: {{thisModule.date}}</p>
     <md-card>
       <md-card-content>
-        <div ng-repeat="(key, value) in thisModule.message | without:'status'">
+        <div ng-repeat="key in thisModule.message | without:'status' | keys" ng-init="value = thisModule.message[key]">
           <table class="table table-striped text-center">
             <h3>{{key}}</h3>
               <tr>

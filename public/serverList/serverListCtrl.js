@@ -7,28 +7,26 @@ angular.module('ServerList', ['SharedHTTP'])
     //server calls
     this.getServerList = function() {
       var url = 'servers.json';
-      var server = '';
-      var serverDetails = [];
 
       HTTPService.get(url, function(data){
         _this.serverList = data;
         angular.forEach(_this.serverList, function(value, key) {
-          server = value.DNSName;
-          serverDetails[0] = value.roles;
-          serverDetails[1] = value.ip;
-          _this.getServerData(server, serverDetails);
+          _this.getServerData(value);
         });
       });
     };
     this.getServerList();
 
-    this.getServerData = function(server, serverDetails) {
-      var url = 'http://' + server + ':3300/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
+    this.getServerData = function(value) {
+      var url = 'http://' + value.DNSName + ':3300/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
       HTTPService.jsonp(url, function(data){
+        console.log(typeof(data));
         _this.serverData = data;
-        _this.serverData.roles = serverDetails[0];
-        _this.serverData.ip = serverDetails[1];
-        if(_this.serverData === false) {
+        _this.serverData.roles = value.roles;
+        _this.serverData.ip = value.ip;
+        var hostname = data.message.hostname.split(".")[0];
+        _this.serverData.hostname = hostname;
+        if(_this.serverData === undefined) {
           var messageObj = {'message' : {'status' : 'error'}}
           _this.serversArray.push(messageObj);
         } else {
@@ -38,19 +36,13 @@ angular.module('ServerList', ['SharedHTTP'])
     };
     this.servers = _this.serversArray;
 
-    // this.getData = function($event, index) {
-    //   var thisServer = _this.serversArray[index].message.hostname;
-
-    // };
-
-    this.getExecutions = function($event, index) {
-      var thisServer = _this.serversArray[index].message.hostname;
-      var url = 'http://' + thisServer + '/status/all?callback=JSON_CALLBACK';
+    this.getExecutions = function($event, server, index) {
+      var url = 'http://' + server.message.hostname + '/status/all?callback=JSON_CALLBACK';
 
       HTTPService.jsonp(url, function(data){
         _this.serversArray[index].executions = data;
         _this.getExecutionPingUrls($event, index);
-        _this.showBottomSheet($event, index);
+        _this.showBottomSheet($event, server, index);
       });
     };
 
@@ -60,8 +52,7 @@ angular.module('ServerList', ['SharedHTTP'])
 
         angular.forEach(executionResult, function(value, key) {
           //iterate over the key/value pairs of each execution
-          var copyValue = angular.copy(value);
-          copyValue = {};
+          var copyValue = {};
           if(value.ping) {copyValue.ping = value.ping}
           if(value.restart) {copyValue.restart = value.restart}
           if(value.kill) {copyValue.kill = value.kill}
@@ -73,38 +64,35 @@ angular.module('ServerList', ['SharedHTTP'])
         _this.serversArray[index].onlyExecutionUrls = justUrls;
     };
 
-    this.checkServerData = function($event, index) {
-      // if (typeof(_this.serversArray[index].modulesArray) === 'undefined') {
-        this.getExecutions($event, index);
-        // this.getExecutions($event, index);
-      // } else {
-        //var modules = _this.serversArray[index].message.modules;
-      // }
+    this.checkServerData = function($event, server, index) {
+      _this.isLoading = true;
+      _this.getExecutions($event, server, index);
     }
 
-    this.showBottomSheet = function($event, index) {
+    this.showBottomSheet = function($event, server, index) {
       $mdBottomSheet.show({
         templateUrl: 'serverList/templates/serverListBottomSheet.html',
         controller: 'ServerListBottomSheetCtrl',
         targetEvent: $event,
         locals: {
-          thisServer: _this.serversArray[index],
+          thisServer: server,
           servers: _this.serversArray,
-          modules: _this.serversArray[index].message.modules,
+          modules: server.message.modules,
           executions: _this.serversArray[index].executions,
           executionUrls: _this.serversArray[index].onlyExecutionUrls
         }
       });
+      _this.isLoading = false;
     };
 
     $scope.serverStatusImg = function(index) {
-      var thisServer = _this.serversArray[index];
-      if(thisServer.message.status !== 'error') {
-        if(thisServer.message.status == 'good'){
+      // var thisServer = _this.serversArray[index];
+      if(index.message.status !== 'error') {
+        if(index.message.status == 'good'){
           return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-        } else if(thisServer.message.status == 'warn') {
+        } else if(index.message.status == 'warn') {
           return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-        } else if(thisServer.message.status == 'error'){
+        } else if(index.message.status == 'error'){
           return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
         } else {
           return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
@@ -113,13 +101,10 @@ angular.module('ServerList', ['SharedHTTP'])
         return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
       }
     };
-
-
-
   }])
 
-  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', 'HTTPService', 'servers', 'thisServer', 'modules', 'executions', 'executionUrls',
-    function($scope, $mdBottomSheet, $mdDialog, HTTPService, servers, thisServer, modules, executions, executionUrls) {
+  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', '$interval', 'HTTPService', 'servers', 'thisServer', 'modules', 'executions', 'executionUrls',
+    function($scope, $mdBottomSheet, $mdDialog, $interval, HTTPService, servers, thisServer, modules, executions, executionUrls) {
 
     $scope.server = servers;
     $scope.thisServer = thisServer;
@@ -131,44 +116,89 @@ angular.module('ServerList', ['SharedHTTP'])
       $mdBottomSheet.hide();
     };
 
-    $scope.moduleStatusImg = function(index) {
+    $scope.moduleStatusImg = function(indexModule) {
         if(this.value === 'warn'){
           return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
         } else if(this.value === 'error'){
           return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
-        } else if (this.value === 'running'){
+        } else if (this.value === 'good'){
           return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
         } else {
           return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
         }
     };
 
-    $scope.selectExecution = function(index) {
-      $scope.thisExecution = executions.executions[index];
-      $scope.thisExecutionUrl = executionUrls[index];
+    $scope.selectExecution = function(indexExec, results, e) {
+      if(e){
+        if(Array.isArray(results)) {
+          //create new object of initial results
+          $scope.originalResultsObj = angular.copy(results);
+          var resultUrls = {};
+          if(results[indexExec].ping) {resultUrls.ping = results[indexExec].ping}
+          if(results[indexExec].restart) {resultUrls.restart = results[indexExec].restart}
+          if(results[indexExec].kill) {resultUrls.kill = results[indexExec].kill}
+          if(results[indexExec].pause) {resultUrls.pause = results[indexExec].pause}
+          if(results[indexExec].resume) {resultUrls.resume = results[indexExec].resume}
+          $scope.thisExecutionUrl = resultUrls;
+          $scope.executionPingUrl = results[indexExec].ping + '?callback=JSON_CALLBACK';
+        } else {
+          var resultUrls = {};
+          if($scope.originalResultsObj[indexExec].ping) {resultUrls.ping = $scope.originalResultsObj[indexExec].ping}
+          if($scope.originalResultsObj[indexExec].restart) {resultUrls.restart = $scope.originalResultsObj[indexExec].restart}
+          if($scope.originalResultsObj[indexExec].kill) {resultUrls.kill = $scope.originalResultsObj[indexExec].kill}
+          if($scope.originalResultsObj[indexExec].pause) {resultUrls.pause = $scope.originalResultsObj[indexExec].pause}
+          if($scope.originalResultsObj[indexExec].resume) {resultUrls.resume = $scope.originalResultsObj[indexExec].resume}
+          $scope.thisExecutionUrl = resultUrls;
+          $scope.executionPingUrl = $scope.originalResultsObj[indexExec].ping + '?callback=JSON_CALLBACK';
+        }
+      } else {
+        // $scope.thisExecution = executions.executions[indexExec];
+        $scope.thisExecutionUrl = executionUrls[indexExec];
+        $scope.executionPingUrl = executionUrls[indexExec].ping + '?callback=JSON_CALLBACK';
+      }
+      $scope.selectedExec = indexExec;
       $scope.thisStep = undefined;
       $scope.thisTask = undefined;
-      $scope.executionPingUrl = executionUrls[index].ping + '?callback=JSON_CALLBACK';
 
-      HTTPService.jsonp($scope.executionPingUrl, function(data) {
-        console.log(data);
-        $scope.executionPing = data;
-      });
+      $scope.highlightSelectedExec = function(indexExec) {
+        return indexExec === $scope.selectedExec ? 'highlight-select' : undefined;
+      };
+      $scope.getExecutions();
     };
 
-    $scope.selectStep = function(index) {
-      $scope.thisStep = $scope.executionPing.message.executionDetails.steps[index];
+
+    $scope.getExecutions = function() {
+      HTTPService.jsonp($scope.executionPingUrl, function(data) {
+          $scope.executionPing = data;
+      });
+      $interval($scope.getExecutions, 600000, false);
+    };
+
+    $scope.selectStep = function(indexStep) {
+      $scope.thisStep = $scope.executionPing.message.executionDetails.steps[indexStep];
       $scope.thisTask = undefined;
+      $scope.selectedStep = indexStep;
+
+      $scope.highlightSelectedStep = function(indexStep) {
+        return indexStep === $scope.selectedStep ? 'highlight-select' : undefined;
+      };
       console.log($scope.thisStep);
     };
 
     $scope.getModuleDetails = function(event) {
       var url = 'http://' + $scope.thisServer.message.hostname + '/ping/module/' + this.key + '?callback=JSON_CALLBACK';
+      var d = '';
       HTTPService.jsonp(url, function(data) {
         $scope.thisModule = data;
         if ($scope.thisModule.entityID === "workflowManager") {
           $scope.thisModule.message.total['queue'] = 'n/a';
         }
+        d = new Date($scope.thisModule.date);
+        $scope.thisModule.date = d.toString();
+        //$scope.thisModule.date = $scope.thisModule.date.toLocaleString();
+        // var convertedDateString = $scope.thisModule.date.toLocaleString();
+        // convertedDateString = convertedDateString.replace('at ', '');
+        // $scope.thisModule.date = new Date(convertedDateString);
         $scope.showModuleDetails(event);
       });
     }
@@ -185,8 +215,13 @@ angular.module('ServerList', ['SharedHTTP'])
       });
     };
 
-    $scope.showTaskDetails = function(event, index) {
-      $scope.thisTask = $scope.thisStep.tasks[index];
+    $scope.showTaskDetails = function(event, indexTask) {
+      $scope.thisTask = $scope.thisStep.tasks[indexTask];
+      $scope.selectedTask = indexTask;
+
+      $scope.highlightSelectedTask = function(indexTask) {
+        return indexTask === $scope.selectedTask ? 'highlight-select' : undefined;
+      };
       console.log($scope.thisTask);
       angular.forEach($scope.thisTask, function(value, key) {
         if (typeof value === "undefined") {
@@ -275,6 +310,7 @@ angular.module('ServerList', ['SharedHTTP'])
   .filter('without', function() {
     return function(items, field) {
       var result = {};
+
       if(items !== undefined) {
         angular.forEach(items, function(value, key) {
           if (key !== field) {
@@ -300,6 +336,15 @@ angular.module('ServerList', ['SharedHTTP'])
     }
   })
 
+  .filter('keys', function() {
+      return function(input) {
+        if (!input) {
+          return [];
+        }
+        return Object.keys(input);
+      }
+  })
+
   .filter('secondsToTimeString', function() {
       //Returns duration from milliseconds in hh:mm:ss format.
       return function(seconds) {
@@ -315,10 +360,29 @@ angular.module('ServerList', ['SharedHTTP'])
         if (hours == "00") {
           timeString = minutes +" minutes "+scnds +" seconds";
         } else {
-          timeString = hours +" hours "+ minutes +" minutes "+scnds +" seconds";
+          timeString = hours +"h  "+ minutes +"m  "+scnds +"s";
         }
 
         return timeString;
+      }
+  })
+
+  .filter('dateString', function($filter) {
+    return function(date) {
+      if(date) {
+        var dateOut = new Date(date);
+        var dateOut = $filter('date')(dateOut, 'medium')
+      } else {
+        var dateOut = 'n/a';
+      }
+      return dateOut;
+    }
+  })
+
+  .filter('prettyJSON', function () {
+    return function (json) {
+      var readable = JSON.stringify(json, null, '    ');
+      return readable;
     }
   })
 
