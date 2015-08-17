@@ -1,12 +1,11 @@
 angular.module('ServerList', ['SharedHTTP'])
-  .controller('ServerListCtrl', ['$scope', '$mdBottomSheet', 'HTTPService', function($scope, $mdBottomSheet, HTTPService) {
-
+  .controller('ServerListCtrl', ['$scope', '$mdBottomSheet', 'HTTPService', '$interval', function($scope, $mdBottomSheet, HTTPService, $interval) {
     var _this = this;
-    _this.serversArray = [];
 
     //server calls
     this.getServerList = function() {
       var url = 'servers.json';
+      _this.serversArray = [];
 
       HTTPService.get(url, function(data){
         _this.serverList = data;
@@ -17,23 +16,61 @@ angular.module('ServerList', ['SharedHTTP'])
     };
     this.getServerList();
 
-    this.getServerData = function(value) {
-      var url = 'http://' + value.DNSName + ':3300/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
-      HTTPService.jsonp(url, function(data){
-        console.log(typeof(data));
-        _this.serverData = data;
-        _this.serverData.roles = value.roles;
-        _this.serverData.ip = value.ip;
-        var hostname = data.message.hostname.split(".")[0];
-        _this.serverData.hostname = hostname;
-        if(_this.serverData === undefined) {
-          var messageObj = {'message' : {'status' : 'error'}}
-          _this.serversArray.push(messageObj);
-        } else {
-          _this.serversArray.push(_this.serverData);
-        }
-      });
+    this.getServerData = function(thisServer) {
+      if(typeof(thisServer) !== 'object') {
+        var serversArray = _this.serversArray;
+        angular.forEach(serversArray, function(value, key) {
+          var url = 'http://' + value.message.hostname + ':3300/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
+          _this.serversArray = [];
+          HTTPService.jsonpServer(url, function(data){
+            _this.serverData = data;
+            if(_this.serverData === undefined) {
+              var messageObj = {};
+              var hostname = {hostname : value.message.hostname};
+              messageObj.message = hostname;
+              messageObj.message['status'] = 'error-offline';
+              var truncHostname = value.hostname.split(".")[0];
+              messageObj['hostname'] = truncHostname;
+              messageObj.roles = value.roles;
+              messageObj.ip = value.ip;
+              _this.serversArray.push(messageObj);
+            } else {
+              _this.serverData.roles = value.roles;
+              _this.serverData.ip = value.ip;
+              var truncHostname = data.message.hostname.split(".")[0];
+              _this.serverData.hostname = truncHostname;
+              _this.serversArray.push(_this.serverData);
+            }
+          });
+        });
+      } else {
+        var url = 'http://' + thisServer.DNSName + ':3300/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
+        HTTPService.jsonpServer(url, function(data){
+          _this.serverData = data;
+          if(_this.serverData === undefined) {
+            var messageObj = {};
+            var hostname = {hostname : thisServer.DNSName};
+            messageObj.message = hostname;
+            messageObj.message['status'] = 'error-offline';
+            var truncHostname = thisServer.DNSName.split(".")[0];
+            messageObj['hostname'] = truncHostname;
+            messageObj.roles = thisServer.roles;
+            messageObj.ip = thisServer.ip;
+            _this.serversArray.push(messageObj);
+          } else {
+            _this.serverData.roles = thisServer.roles;
+            _this.serverData.ip = thisServer.ip;
+            var truncHostname = data.message.hostname.split(".")[0];
+            _this.serverData.hostname = truncHostname;
+            _this.serversArray.push(_this.serverData);
+          }
+          if(_this.serversArray.length === 1){
+            $interval(_this.getServerData, 60000, false);
+          }
+        });
+      }
     };
+    console.log(_this.serversArray);
     this.servers = _this.serversArray;
 
     this.getExecutions = function($event, server, index) {
@@ -44,6 +81,7 @@ angular.module('ServerList', ['SharedHTTP'])
         _this.getExecutionPingUrls($event, index);
         _this.showBottomSheet($event, server, index);
       });
+      $interval($scope.getExecutions, 600000, false);
     };
 
     this.getExecutionPingUrls = function($event, index) {
@@ -62,6 +100,7 @@ angular.module('ServerList', ['SharedHTTP'])
           justUrls.push(copyValue);
         });
         _this.serversArray[index].onlyExecutionUrls = justUrls;
+        _this.isLoading = false;
     };
 
     this.checkServerData = function($event, server, index) {
@@ -82,23 +121,25 @@ angular.module('ServerList', ['SharedHTTP'])
           executionUrls: _this.serversArray[index].onlyExecutionUrls
         }
       });
-      _this.isLoading = false;
     };
 
     $scope.serverStatusImg = function(index) {
-      // var thisServer = _this.serversArray[index];
       if(index.message.status !== 'error') {
         if(index.message.status == 'good'){
           return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
         } else if(index.message.status == 'warn') {
           return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-        } else if(index.message.status == 'error'){
-          return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
         } else {
-          return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+          return { "background": "url('img/server-off-sm.png') no-repeat", "background-size": "cover" };
         }
       } else {
-        return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
+        return { "background": "url(img/server-err-sm.png) no-repeat", "background-size": "cover" };
+      }
+    };
+
+    $scope.serverOnline = function(index) {
+      if(index.message.status === 'error-offline') {
+        return { "pointer-events" : "none", "opacity" : "0.5"};
       }
     };
   }])
@@ -294,6 +335,18 @@ angular.module('ServerList', ['SharedHTTP'])
         $mdDialog.hide();
       };
   }])
+
+  .filter('disable', function() {
+    return function(items, field) {
+      var result = {};
+      angular.forEach(items, function(value, key) {
+        if (key === field) {
+          result[key] = value;
+        }
+      });
+      return result;
+    };
+  })
 
   .filter('with', function() {
     return function(items, field) {

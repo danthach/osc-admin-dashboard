@@ -13,7 +13,7 @@
     </i>
   </div>
   <div id="feedLoading" ng-show="serverListCtrl.isLoading"> </div>
-  <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'message.status' | filter:s as results">
+  <div flex="20" ng-repeat="server in serverListCtrl.servers | orderBy:'-message.status' | filter:s as results" ng-style="{{serverOnline(server)}}">
   	<md-card class="server-status-card" ng-click="serverListCtrl.checkServerData($event, server, $index)">
     		<md-card-content>
           <div class="server-status-img" ng-style="{{serverStatusImg(server)}}">

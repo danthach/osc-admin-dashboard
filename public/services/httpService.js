@@ -15,6 +15,16 @@ angular.module('SharedHTTP', [])
         });
     },
 
+    jsonpServer: function(url, callback) {
+        $http.jsonp(url).success(function(data) {
+          console.log(data);
+          callback(data);
+        }).
+        error(function(data, status, headers, config) {
+          callback(data);
+        })
+    },
+
     jsonp: function(url, callback) {
         $http.jsonp(url).success(function(data) {
           console.log(data);
