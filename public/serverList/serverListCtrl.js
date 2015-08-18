@@ -28,7 +28,7 @@ angular.module('ServerList', ['SharedHTTP'])
               var messageObj = {};
               var hostname = {hostname : value.message.hostname};
               messageObj.message = hostname;
-              messageObj.message['status'] = 'error-offline';
+              messageObj.message['status'] = 'e-offline';
               var truncHostname = value.hostname.split(".")[0];
               messageObj['hostname'] = truncHostname;
               messageObj.roles = value.roles;
@@ -51,7 +51,7 @@ angular.module('ServerList', ['SharedHTTP'])
             var messageObj = {};
             var hostname = {hostname : thisServer.DNSName};
             messageObj.message = hostname;
-            messageObj.message['status'] = 'error-offline';
+            messageObj.message['status'] = 'e-offline';
             var truncHostname = thisServer.DNSName.split(".")[0];
             messageObj['hostname'] = truncHostname;
             messageObj.roles = thisServer.roles;
@@ -124,21 +124,20 @@ angular.module('ServerList', ['SharedHTTP'])
     };
 
     $scope.serverStatusImg = function(index) {
-      if(index.message.status !== 'error') {
-        if(index.message.status == 'good'){
+
+      if(index.message.status == 'good'){
           return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-        } else if(index.message.status == 'warn') {
+      } else if(index.message.status == 'warn') {
           return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-        } else {
+      } else if(index.message.status == 'e-offline') {
           return { "background": "url('img/server-off-sm.png') no-repeat", "background-size": "cover" };
-        }
       } else {
         return { "background": "url(img/server-err-sm.png) no-repeat", "background-size": "cover" };
       }
     };
 
     $scope.serverOnline = function(index) {
-      if(index.message.status === 'error-offline') {
+      if(index.message.status === 'e-offline') {
         return { "pointer-events" : "none", "opacity" : "0.5"};
       }
     };
