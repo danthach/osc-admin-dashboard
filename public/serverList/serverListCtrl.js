@@ -20,10 +20,11 @@ angular.module('ServerList', ['SharedHTTP'])
       if(typeof(thisServer) !== 'object') {
         var serversArray = _this.serversArray;
         angular.forEach(serversArray, function(value, key) {
-          var url = 'http://' + value.message.hostname + ':3300/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
+          var url = 'http://' + value.message.hostname + '/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
           _this.serversArray = [];
           HTTPService.jsonpServer(url, function(data){
             _this.serverData = data;
+            console.log(data);
             if(_this.serverData === undefined) {
               var messageObj = {};
               var hostname = {hostname : value.message.hostname};
@@ -70,16 +71,18 @@ angular.module('ServerList', ['SharedHTTP'])
         });
       }
     };
-    console.log(_this.serversArray);
     this.servers = _this.serversArray;
 
     this.getExecutions = function($event, server, index) {
       var url = 'http://' + server.message.hostname + '/status/all?callback=JSON_CALLBACK';
-
-      HTTPService.jsonp(url, function(data){
-        _this.serversArray[index].executions = data;
-        _this.getExecutionPingUrls($event, index);
-        _this.showBottomSheet($event, server, index);
+      HTTPService.jsonpExec(url, function(data){
+        if(data){
+          _this.serversArray[index].executions = data;
+          _this.getExecutionPingUrls($event, index);
+          _this.showBottomSheet($event, server, index);
+        } else {
+          _this.isLoading = false;
+        }
       });
       $interval($scope.getExecutions, 600000, false);
     };
@@ -100,7 +103,6 @@ angular.module('ServerList', ['SharedHTTP'])
           justUrls.push(copyValue);
         });
         _this.serversArray[index].onlyExecutionUrls = justUrls;
-        _this.isLoading = false;
     };
 
     this.checkServerData = function($event, server, index) {
@@ -109,6 +111,7 @@ angular.module('ServerList', ['SharedHTTP'])
     }
 
     this.showBottomSheet = function($event, server, index) {
+      _this.isLoading = false;
       $mdBottomSheet.show({
         templateUrl: 'serverList/templates/serverListBottomSheet.html',
         controller: 'ServerListBottomSheetCtrl',
@@ -172,7 +175,7 @@ angular.module('ServerList', ['SharedHTTP'])
       if(e){
         if(Array.isArray(results)) {
           //create new object of initial results
-          $scope.originalResultsObj = angular.copy(results);
+          $scope.originalExecResultsObj = angular.copy(results);
           var resultUrls = {};
           if(results[indexExec].ping) {resultUrls.ping = results[indexExec].ping}
           if(results[indexExec].restart) {resultUrls.restart = results[indexExec].restart}
@@ -183,13 +186,13 @@ angular.module('ServerList', ['SharedHTTP'])
           $scope.executionPingUrl = results[indexExec].ping + '?callback=JSON_CALLBACK';
         } else {
           var resultUrls = {};
-          if($scope.originalResultsObj[indexExec].ping) {resultUrls.ping = $scope.originalResultsObj[indexExec].ping}
-          if($scope.originalResultsObj[indexExec].restart) {resultUrls.restart = $scope.originalResultsObj[indexExec].restart}
-          if($scope.originalResultsObj[indexExec].kill) {resultUrls.kill = $scope.originalResultsObj[indexExec].kill}
-          if($scope.originalResultsObj[indexExec].pause) {resultUrls.pause = $scope.originalResultsObj[indexExec].pause}
-          if($scope.originalResultsObj[indexExec].resume) {resultUrls.resume = $scope.originalResultsObj[indexExec].resume}
+          if($scope.originalExecResultsObj[indexExec].ping) {resultUrls.ping = $scope.originalExecResultsObj[indexExec].ping}
+          if($scope.originalExecResultsObj[indexExec].restart) {resultUrls.restart = $scope.originalExecResultsObj[indexExec].restart}
+          if($scope.originalExecResultsObj[indexExec].kill) {resultUrls.kill = $scope.originalExecResultsObj[indexExec].kill}
+          if($scope.originalExecResultsObj[indexExec].pause) {resultUrls.pause = $scope.originalExecResultsObj[indexExec].pause}
+          if($scope.originalExecResultsObj[indexExec].resume) {resultUrls.resume = $scope.originalExecResultsObj[indexExec].resume}
           $scope.thisExecutionUrl = resultUrls;
-          $scope.executionPingUrl = $scope.originalResultsObj[indexExec].ping + '?callback=JSON_CALLBACK';
+          $scope.executionPingUrl = $scope.originalExecResultsObj[indexExec].ping + '?callback=JSON_CALLBACK';
         }
       } else {
         // $scope.thisExecution = executions.executions[indexExec];
@@ -214,15 +217,14 @@ angular.module('ServerList', ['SharedHTTP'])
       $interval($scope.getExecutions, 600000, false);
     };
 
-    $scope.selectStep = function(indexStep) {
-      $scope.thisStep = $scope.executionPing.message.executionDetails.steps[indexStep];
+    $scope.selectStep = function(indexStep, results, s) {
+      $scope.thisStep = results[indexStep];
       $scope.thisTask = undefined;
       $scope.selectedStep = indexStep;
-
+      console.log($scope.thisStep);
       $scope.highlightSelectedStep = function(indexStep) {
         return indexStep === $scope.selectedStep ? 'highlight-select' : undefined;
       };
-      console.log($scope.thisStep);
     };
 
     $scope.getModuleDetails = function(event) {
@@ -255,8 +257,8 @@ angular.module('ServerList', ['SharedHTTP'])
       });
     };
 
-    $scope.showTaskDetails = function(event, indexTask) {
-      $scope.thisTask = $scope.thisStep.tasks[indexTask];
+    $scope.showTaskDetails = function(event, indexTask, results, t) {
+      $scope.thisTask = results[indexTask];
       $scope.selectedTask = indexTask;
 
       $scope.highlightSelectedTask = function(indexTask) {
@@ -290,6 +292,18 @@ angular.module('ServerList', ['SharedHTTP'])
         targetEvent: event,
         locals: {
           executionPing: $scope.executionPing
+        }
+      });
+    };
+
+    $scope.showExecutionFiles = function(event, index) {
+      $mdDialog.show({
+        controller: 'ExecutionFilesCtrl',
+        templateUrl: 'serverList/templates/executionFilesModal.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          settingsObject: $scope.executionPing.message.executionDetails.settingsObj
         }
       });
     };
@@ -330,6 +344,68 @@ angular.module('ServerList', ['SharedHTTP'])
   .controller('SettingsModalCtrl',['$scope', '$mdDialog', 'executionPing',
     function($scope, $mdDialog, executionPing) {
       $scope.executionPing = executionPing;
+      $scope.closeTaskDetails = function() {
+        $mdDialog.hide();
+      };
+  }])
+
+  .controller('ExecutionFilesCtrl',['$scope', '$mdDialog', 'settingsObject',
+    function($scope, $mdDialog, settingsObject) {
+      var executionFiles = {};
+      var thumbnailRemoteURIArray = []
+      angular.forEach(settingsObject, function(value, key) {
+        console.log('key:' + key + ' value: ' + value);
+          if(key === 'backupURI') {executionFiles.backupURI = value}
+          if(key === 'inputURI') {executionFiles.inputURI = value}
+          if(key === 'mp4Location') {executionFiles.mp4Location = value}
+          if(key === 'spritesheetOutputURI') {executionFiles.spritesheetOutputURI = value}
+          if(key === 'spritesheetRemoteURI') {executionFiles.spritesheetRemoteURI = value}
+          if(key === 'spritesheetRemoteURL') {executionFiles.spritesheetRemoteURL = value}
+          if(key === 'streamAvailableURLs') {
+            if(value[0]) {
+              executionFiles.streamAvailableURLs = value
+            }
+          }
+          if(key === 'streamRemoteURIs') {
+            if(value[0]){
+              executionFiles.streamRemoteURIs = [];
+              if(value[4]) {
+                executionFiles.streamRemoteURIs[0] = value[0];
+                executionFiles.streamRemoteURIs[1] = value[4];
+              } else if (value[2]) {
+                executionFiles.streamRemoteURIs[0] = value[2];
+              } else {
+                executionFiles.streamRemoteURIs[0] = value[0];
+              }
+            }
+          }
+          if(key === 'streams') {
+            if(value[0]){
+              executionFiles.streams = [];
+              if(value[4]) {
+                executionFiles.streams[0] = value[0];
+                executionFiles.streams[1] = value[4];
+              } else if (value[2]) {
+                executionFiles.streams[0] = value[2];
+              } else {
+                executionFiles.streams[0] = value[0];
+              }
+            }
+          }
+          if(key === 'thumbnailRemoteURIs') {
+            if(value[0]) {
+              executionFiles.thumbnailRemoteURIs = [];
+              angular.forEach(value, function(thumbnailValue, thumbnailKey) {
+                executionFiles.thumbnailRemoteURIs.push(thumbnailValue);
+              });
+            }
+          }
+          if(key === 'videoOutputURI') {executionFiles.videoOutputURI = value}
+          if(key === 'vttOutputURI') {executionFiles.vttOutputURI = value}
+          if(key === 'vttRemoteURI') {executionFiles.vttRemoteURI = value}
+          if(key === 'vttRemoteURL') {executionFiles.vttRemoteURL = value}
+      });
+      $scope.executionFiles = executionFiles;
       $scope.closeTaskDetails = function() {
         $mdDialog.hide();
       };

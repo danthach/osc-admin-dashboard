@@ -1,6 +1,6 @@
 angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
   .controller('MasterCtrl', ['$scope', 'HTTPService', '$mdDialog', function($scope, HTTPService, $mdDialog) {
-    
+
     var _this = this;
 
     this.getUserData = function() {
@@ -64,9 +64,9 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
           _this.showLogin();
         });
     };
-  
+
   }])
-  .controller('MyProfileCtrl',['$scope', 'HTTPService', '$mdDialog', '$mdToast', 'user', 
+  .controller('MyProfileCtrl',['$scope', 'HTTPService', '$mdDialog', '$mdToast', 'user',
     function($scope, HTTPService, $mdDialog, $mdToast, user) {
 
       $scope.user = user;
@@ -107,7 +107,7 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
       };
 
   }])
-  .controller('ManageUsersCtrl',['$scope', '$mdDialog', '$mdToast', 'HTTPService', 
+  .controller('ManageUsersCtrl',['$scope', '$mdDialog', '$mdToast', 'HTTPService',
     function($scope, $mdDialog, $mdToast, HTTPService) {
 
       $scope.close = function() {
@@ -163,7 +163,7 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
       };
 
   }])
-  .controller('LoginCtrl',['$scope', '$rootScope', '$mdDialog', '$mdToast', 'HTTPService', 
+  .controller('LoginCtrl',['$scope', '$rootScope', '$mdDialog', '$mdToast', 'HTTPService',
     function($scope, $rootScope, $mdDialog, $mdToast, HTTPService) {
 
       $scope.close = function() {
@@ -173,9 +173,9 @@ angular.module('OSCDashboardApp', ['ngMaterial', 'ServerList', 'SharedHTTP'])
       $scope.login = function(user) {
         var url = '/login/';
         HTTPService.post(user, url, function(success, data){
-            console.log('Login Data = ', data);
+            //console.log('Login Data = ', data);
             var status = success ? 'Success logging in' : 'Failure logging in';
-            console.log(status);
+            //console.log(status);
             if(!data.error){
               $scope.failedLogin = false;
               $scope.close();

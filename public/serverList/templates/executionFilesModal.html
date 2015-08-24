@@ -2,14 +2,14 @@
   <form>
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h2>{{executionPing.entityID}} Settings</h2>
+      <h2>{{executionPing.entityID}} Execution Files</h2>
     </div>
   </md-toolbar>
   <md-dialog-content>
     <md-card>
       <md-card-content>
-        <div ng-repeat="(key, value) in executionPing.message.executionDetails | with:'settingsObj'">
-          <p class="pre">{{value | prettyJSON}}</p>
+        <div ng-repeat="(key, value) in executionFiles">
+          <p class="pre">{{key}} : {{value | prettyJSON}}</p>
         </div>
       </md-card-content>
     </md-card>
