@@ -66,7 +66,7 @@ angular.module('ServerList', ['SharedHTTP'])
             _this.serversArray.push(_this.serverData);
           }
           if(_this.serversArray.length === 1){
-            $interval(_this.getServerData, 60000, false);
+            $interval(_this.getServerData, 150000, false);
           }
         });
       }
@@ -84,7 +84,7 @@ angular.module('ServerList', ['SharedHTTP'])
           _this.isLoading = false;
         }
       });
-      $interval($scope.getExecutions, 600000, false);
+      $interval($scope.getExecutions, 30000, false);
     };
 
     this.getExecutionPingUrls = function($event, index) {
@@ -214,7 +214,7 @@ angular.module('ServerList', ['SharedHTTP'])
       HTTPService.jsonp($scope.executionPingUrl, function(data) {
           $scope.executionPing = data;
       });
-      $interval($scope.getExecutions, 600000, false);
+      $interval($scope.getExecutions, 30000, false);
     };
 
     $scope.selectStep = function(indexStep, results, s) {
