@@ -148,8 +148,8 @@
 					  	<md-card>
 					    	<md-card-content id="module-action-card" layout="row">
 					    		<div ng-repeat="(key, value) in thisExecutionUrl | filter:e as resultsExec">
-						    		<button class="md-raised md-primary md-button md-default-theme" flex>
-                      <span class="ng-scope"><a ng-href="{{value}}" target="_blank">{{key}}</a></span>
+						    		<button class="md-raised md-primary md-button md-default-theme" ng-click="selectOperation(value, resultsExec)" flex>
+                      <span class="ng-scope">{{key}}</span>
 						    			<div class="md-ripple-container"></div>
 						    		</button>
 					    		</div>

@@ -84,7 +84,7 @@ angular.module('ServerList', ['SharedHTTP'])
           _this.isLoading = false;
         }
       });
-      $interval($scope.getExecutions, 30000, false);
+      //$interval($scope.getExecutions, 30000, false);
     };
 
     this.getExecutionPingUrls = function($event, index) {
@@ -217,6 +217,31 @@ angular.module('ServerList', ['SharedHTTP'])
       $interval($scope.getExecutions, 30000, false);
     };
 
+    $scope.selectOperation = function(operationUrl, results) {
+        $scope.thisOperationUrl = operationUrl + '?callback=JSON_CALLBACK';
+        $scope.performOperation();
+    };
+
+    $scope.performOperation = function() {
+      HTTPService.jsonp($scope.thisOperationUrl, function(data) {
+          //$scope.operationResponse = data;
+          $scope.operationResponse = data;
+          $scope.showOperationResponse(event);
+      });
+    };
+
+    $scope.showOperationResponse = function(event) {
+      $mdDialog.show({
+        controller: 'OperationResponseModalCtrl',
+        templateUrl: 'serverList/templates/operationResModalCtrl.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          operationResponse: $scope.operationResponse
+        }
+      });
+    };
+
     $scope.selectStep = function(indexStep, results, s) {
       $scope.thisStep = results[indexStep];
       $scope.thisTask = undefined;
@@ -325,6 +350,14 @@ angular.module('ServerList', ['SharedHTTP'])
     };
 
   }])
+  .controller('OperationResponseModalCtrl',['$scope', '$mdDialog', 'operationResponse',
+    function($scope, $mdDialog, operationResponse) {
+      $scope.operationResponse = operationResponse;
+      $scope.closeTaskDetails = function() {
+        $mdDialog.hide();
+      };
+  }])
+
   .controller('TaskStatusModalCtrl',['$scope', '$mdDialog', 'thisTask',
     function($scope, $mdDialog, thisTask) {
       $scope.thisTask = thisTask;

@@ -286,7 +286,7 @@ caption {
   color: #777;
   text-align: left;
 }
-th {
+th, td.pre  {
   text-align: left;
 }
 table > tbody > tr > td.td-width {

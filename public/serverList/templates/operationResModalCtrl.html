@@ -1,0 +1,39 @@
+<md-dialog id="module-details-modal" aria-label="Module Status">
+  <form>
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>{{operationResponse.executionID}}</h2>
+      <h2>{{operationResponse.entityID}}</h2>
+    </div>
+  </md-toolbar>
+  <md-dialog-content>
+    <md-card>
+      <md-card-content>
+        <div>
+          <table class="table table-striped text-center">
+            <tr>
+              <th>Status</th>
+            </tr>
+            <tr>
+              <td class="pre">{{operationResponse.success}}</td>
+            </tr>
+          </table>
+          <table class="table table-striped text-center">
+            <tr>
+              <th>Message</th>
+            </tr>
+            <tr>
+              <td class="pre">{{operationResponse.message | prettyJSON}}</td>
+            </tr>
+          </table>
+        </div>
+      </md-card-content>
+    </md-card>
+  </md-dialog-content>
+  <div class="md-actions" layout="row">
+    <md-button ng-click="closeTaskDetails()" class="md-primary">
+     DISMISS
+    </md-button>
+  </div>
+  </form>
+</md-dialog>
