@@ -24,7 +24,6 @@ angular.module('ServerList', ['SharedHTTP'])
           _this.serversArray = [];
           HTTPService.jsonpServer(url, function(data){
             _this.serverData = data;
-            console.log(data);
             if(_this.serverData === undefined) {
               var messageObj = {};
               var hostname = {hostname : value.message.hostname};
@@ -74,8 +73,8 @@ angular.module('ServerList', ['SharedHTTP'])
     this.servers = _this.serversArray;
 
     this.getExecutions = function($event, server, index) {
-      var url = 'http://' + server.message.hostname + '/status/all?callback=JSON_CALLBACK';
-      HTTPService.jsonpExec(url, function(data){
+      _this.serverUrl = 'http://' + server.message.hostname + '/status/all?callback=JSON_CALLBACK';
+      HTTPService.jsonpExec(_this.serverUrl, function(data){
         if(data){
           _this.serversArray[index].executions = data;
           _this.getExecutionPingUrls($event, index);
@@ -84,7 +83,7 @@ angular.module('ServerList', ['SharedHTTP'])
           _this.isLoading = false;
         }
       });
-      //$interval($scope.getExecutions, 30000, false);
+      //$interval($scope.getExecutions, 3000, false);
     };
 
     this.getExecutionPingUrls = function($event, index) {
@@ -118,6 +117,7 @@ angular.module('ServerList', ['SharedHTTP'])
         targetEvent: $event,
         locals: {
           thisServer: server,
+          serverUrl: _this.serverUrl,
           servers: _this.serversArray,
           modules: server.message.modules,
           executions: _this.serversArray[index].executions,
@@ -146,10 +146,11 @@ angular.module('ServerList', ['SharedHTTP'])
     };
   }])
 
-  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', '$interval', 'HTTPService', 'servers', 'thisServer', 'modules', 'executions', 'executionUrls',
-    function($scope, $mdBottomSheet, $mdDialog, $interval, HTTPService, servers, thisServer, modules, executions, executionUrls) {
+  .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', '$interval', 'HTTPService', 'servers', 'serverUrl', 'thisServer', 'modules', 'executions', 'executionUrls',
+    function($scope, $mdBottomSheet, $mdDialog, $interval, HTTPService, servers, serverUrl, thisServer, modules, executions, executionUrls) {
 
     $scope.server = servers;
+    $scope.serverUrl = serverUrl;
     $scope.thisServer = thisServer;
     $scope.modules = modules;
     $scope.executions = executions;
@@ -206,15 +207,21 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.highlightSelectedExec = function(indexExec) {
         return indexExec === $scope.selectedExec ? 'highlight-select' : undefined;
       };
-      $scope.getExecutions();
+      $scope.getThisExecution();
+      $interval($scope.getThisExecution, 30000, false);
+      $interval($scope.getExecutions, 30000, false);
     };
 
-
-    $scope.getExecutions = function() {
+    $scope.getThisExecution = function() {
       HTTPService.jsonp($scope.executionPingUrl, function(data) {
           $scope.executionPing = data;
       });
-      $interval($scope.getExecutions, 30000, false);
+    };
+
+    $scope.getExecutions = function() {
+      HTTPService.jsonp($scope.serverUrl, function(data) {
+          $scope.executions = data;
+      });
     };
 
     $scope.selectOperation = function(operationUrl, results) {
@@ -228,6 +235,7 @@ angular.module('ServerList', ['SharedHTTP'])
           $scope.operationResponse = data;
           $scope.showOperationResponse(event);
       });
+      $scope.getExecutions();
     };
 
     $scope.showOperationResponse = function(event) {
