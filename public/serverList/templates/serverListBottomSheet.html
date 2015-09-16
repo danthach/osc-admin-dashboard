@@ -35,22 +35,22 @@
 					    	<md-card-content layout="column">
 					    				<div class="exec-card-header" flex>
 					            	<h2>EXECUTIONS</h2>
-					            	<p ng-show="!showExecSearch" ng-click="showExecSearch = !showExecSearch">
+					            	<p ng-show="!reasonForSearch" ng-click="showExecSearch()">
 					            		<i class="material-icons">&#xE8B6;</i>
 					            		SEARCH
 					            	</P>
-					            	<span class="material-icons" ng-show="showExecSearch" ng-click="showExecSearch = !showExecSearch; e = ''">
+					            	<span class="material-icons" ng-show="reasonForSearch" ng-click="showExecSearch(); e = ''">
 					            		&#xE888;
 					            	</span>
 					            </div>
-					            <div class="exec-search-box" ng-show="showExecSearch" flex>
+					            <div class="exec-search-box" ng-show="reasonForSearch" flex>
 					            	<md-input-container flex>
 								          <label>Search Executions...</label>
 								          <input ng-model="e">
 								        </md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in executions.executions | filter:e as resultsExec" ng-click="selectExecution(key, resultsExec, e)" ng-class="highlightSelectedExec(key)">
+						          	<tr ng-repeat="(key, value) in executions.executions | filter:e as resultsExec" ng-click="startExecutionInterval(key, resultsExec, e)" ng-class="highlightSelectedExec(key)">
 						          		<td>
 							          		<table class="table-hover clickable-table">
 							          			<tr>
@@ -90,7 +90,7 @@
 							        	</md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in executionPing.message.executionDetails.steps | filter:s as resultsStep" ng-click="selectStep(key, resultsStep, s)" ng-class="highlightSelectedStep(key)">
+						          	<tr ng-repeat="(key, value) in executionPing.message.executionDetails.steps | filter:s as resultsStep" ng-click="startStepInterval(key, resultsStep, s)" ng-class="highlightSelectedStep(key)">
 						          		<td>{{value.label}}</td>
 						          		<td>{{value.status}}</td>
 						          	</tr>
@@ -123,7 +123,7 @@
 							        	</md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as resultsTask" ng-click="showTaskDetails($event, key, resultsTask, s)" ng-class="highlightSelectedTask(key)">
+						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as resultsTask" ng-click="startTaskInterval(key, resultsTask, s)" ng-class="highlightSelectedTask(key)">
 						          		<td>{{value.type}}</td>
 						          		<td>{{value.status}}</td>
 <!-- 						          		<td class="button-cell">
