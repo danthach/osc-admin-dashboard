@@ -189,7 +189,7 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.thisStep = '';
     };
 
-    $scope.startExecutionInterval = function(indexE, results, e) {
+    $scope.startExecutionInterval = function(indexE, resultsE, e) {
       //kill off existing intervals
       $interval.cancel($scope.getThisExecutionPromise);
       $interval.cancel($scope.getExecutionsPromise);
@@ -198,17 +198,17 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.highlightSelectedTask = undefined;
       $scope.highlightSelectedStep = undefined;
       $scope.newExecutionClick = true;
-      $scope.selectExecution(indexE, results, e);
+      $scope.selectExecution(indexE, resultsE, e);
       // $scope.selectExecutionPromise = $interval($scope.selectExecution, 10000, false);
       $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
-      $scope.getExecutionsPromise = $interval($scope.getExecutions, 30000, false);
+      $scope.getExecutionsPromise = $interval($scope.getExecutions, 30000, false, indexE, resultsE, e);
     };
 
     //index is where you are in the array
     //results can be an array of searched results, or it can be an object of previous result.
     //e is the search string
     //when interval runs, all the parameters become undefined
-    $scope.selectExecution = function(indexE, results, e) {
+    $scope.selectExecution = function(indexE, resultsE, e) {
       //set currentExecsLen to executions.executions.length initially
       if(!$scope.previousExecsLen) {
         $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
@@ -218,20 +218,21 @@ angular.module('ServerList', ['SharedHTTP'])
           $interval.cancel($scope.selectExecutionPromise);
           $interval.cancel($scope.getThisExecutionPromise);
           $interval.cancel($scope.getExecutionsPromise);
-          if(Array.isArray(results)) {
+          if(Array.isArray(resultsE)) {
             //create new object of initial results
-            $scope.originalExecResultsObj = angular.copy(results);
+            $scope.originalExecResultsObj = angular.copy(resultsE);
             var resultUrls = {};
-            if(results[indexE].ping) {resultUrls.ping = results[indexE].ping}
-            if(results[indexE].restart) {resultUrls.restart = results[indexE].restart}
-            if(results[indexE].kill) {resultUrls.kill = results[indexE].kill}
-            if(results[indexE].pause) {resultUrls.pause = results[indexE].pause}
-            if(results[indexE].resume) {resultUrls.resume = results[indexE].resume}
+            if(resultsE[indexE].ping) {resultUrls.ping = resultsE[indexE].ping}
+            if(resultsE[indexE].restart) {resultUrls.restart = resultsE[indexE].restart}
+            if(resultsE[indexE].kill) {resultUrls.kill = resultsE[indexE].kill}
+            if(resultsE[indexE].pause) {resultUrls.pause = resultsE[indexE].pause}
+            if(resultsE[indexE].resume) {resultUrls.resume = resultsE[indexE].resume}
+            if(resultsE[indexE].force) {resultUrls.resume = resultsE[indexE].force}
             $scope.thisExecutionUrl = resultUrls;
-            $scope.executionPingUrl = results[indexE].ping + '?callback=JSON_CALLBACK';
+            $scope.executionPingUrl = resultsE[indexE].ping + '?callback=JSON_CALLBACK';
             //a search counts as a new click
             $scope.newExecutionClick = false;
-          } else {
+          } else if (resultsE !== undefined) {
             //display original execution list after a search, e= ""
             var resultUrls = {};
             if($scope.originalExecResultsObj[indexE].ping) {resultUrls.ping = $scope.originalExecResultsObj[indexE].ping}
@@ -239,26 +240,35 @@ angular.module('ServerList', ['SharedHTTP'])
             if($scope.originalExecResultsObj[indexE].kill) {resultUrls.kill = $scope.originalExecResultsObj[indexE].kill}
             if($scope.originalExecResultsObj[indexE].pause) {resultUrls.pause = $scope.originalExecResultsObj[indexE].pause}
             if($scope.originalExecResultsObj[indexE].resume) {resultUrls.resume = $scope.originalExecResultsObj[indexE].resume}
+            if($scope.originalExecResultsObj[indexE].force) {resultUrls.resume = $scope.originalExecResultsObj[indexE].force}
             $scope.thisExecutionUrl = resultUrls;
             $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
+            //a search counts as a new click
+            $scope.newExecutionClick = false;
+          } else {
+            //after a search, interval runs, which doesn't return indexE, result, or e
+            $scope.thisExecutionUrl = $scope.executionUrls[indexE];
+            $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+            $scope.newExecutionClick = false;
           }
         } else {
-          if(Array.isArray(results)) {
-            $scope.originalExecResultsObj = angular.copy(results);
+          if(Array.isArray(resultsE)) {
+            if(!$scope.operationUpdate) {
+              $scope.originalExecResultsObj = angular.copy(resultsE);
+            }
           }
           //when the interval runs, the index does not become the index anymore so we stored the previous index in $scope.selectedExecIndex
           if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
             indexE = $scope.selectedExecIndex;
           }
-          $scope.newExecutionClick = false;
           if(!$scope.executionPingUrl && e !== "") {
             if($scope.executionUrls) {
               //user clicks search but doesn't enter any value in field
               $scope.thisExecutionUrl = $scope.executionUrls[indexE];
               $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
             } else {
-              $scope.thisExecutionUrl = executionUrls[indexE];
-              $scope.executionPingUrl = executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+              // $scope.thisExecutionUrl = executionUrls[indexE];
+              // $scope.executionPingUrl = executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
             }
           } else if ($scope.originalExecResultsObj) {
               if(Array.isArray($scope.originalExecResultsObj) && !$scope.executionPingUrl) {
@@ -268,23 +278,27 @@ angular.module('ServerList', ['SharedHTTP'])
                 if($scope.originalExecResultsObj[indexE].kill) {resultUrls.kill = $scope.originalExecResultsObj[indexE].kill}
                 if($scope.originalExecResultsObj[indexE].pause) {resultUrls.pause = $scope.originalExecResultsObj[indexE].pause}
                 if($scope.originalExecResultsObj[indexE].resume) {resultUrls.resume = $scope.originalExecResultsObj[indexE].resume}
+                if($scope.originalExecResultsObj[indexE].force) {resultUrls.resume = $scope.originalExecResultsObj[indexE].force}
                 $scope.thisExecutionUrl = resultUrls;
                 $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
-              } else if (Array.isArray($scope.originalExecResultsObj)) {
+              }
+              else if (Array.isArray($scope.originalExecResultsObj) && $scope.newExecutionClick) {
                 var resultUrls = {};
                 if($scope.originalExecResultsObj[indexE].ping) {resultUrls.ping = $scope.originalExecResultsObj[indexE].ping}
                 if($scope.originalExecResultsObj[indexE].restart) {resultUrls.restart = $scope.originalExecResultsObj[indexE].restart}
                 if($scope.originalExecResultsObj[indexE].kill) {resultUrls.kill = $scope.originalExecResultsObj[indexE].kill}
                 if($scope.originalExecResultsObj[indexE].pause) {resultUrls.pause = $scope.originalExecResultsObj[indexE].pause}
                 if($scope.originalExecResultsObj[indexE].resume) {resultUrls.resume = $scope.originalExecResultsObj[indexE].resume}
+                if($scope.originalExecResultsObj[indexE].force) {resultUrls.resume = $scope.originalExecResultsObj[indexE].force}
                 $scope.thisExecutionUrl = resultUrls;
                 $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
               }
           } else {
               //after a search, interval runs, which doesn't return indexE, result, or e
-              $scope.thisExecutionUrl = executionUrls[indexE];
-              $scope.executionPingUrl = executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+              $scope.thisExecutionUrl = $scope.executionUrls[indexE];
+              $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
           }
+          $scope.newExecutionClick = false;
         }
         if(indexE != undefined) {
           //save the index so when interval runs, it remembers previous index
@@ -310,11 +324,11 @@ angular.module('ServerList', ['SharedHTTP'])
       });
     };
 
-    $scope.getExecutions = function() {
+    $scope.getExecutions = function(indexE, results, e) {
       HTTPService.jsonp($scope.serverUrl, function(data) {
           $scope.executions = data;
           $scope.getExecutionUrls();
-          $scope.selectExecution();
+          $scope.selectExecution(indexE, results, e);
       });
     };
 
@@ -335,19 +349,20 @@ angular.module('ServerList', ['SharedHTTP'])
         $scope.executionUrls = justUrls;
     };
 
-    $scope.selectOperation = function(operationUrl, results) {
+    $scope.selectOperation = function(operationUrl, resultsExec) {
         $scope.thisOperationUrl = operationUrl + '?callback=JSON_CALLBACK';
-        $scope.performOperation();
+        $scope.performOperation(operationUrl, resultsExec);
     };
 
-    $scope.performOperation = function() {
+    $scope.performOperation = function(operationUrl, resultsExec) {
       HTTPService.jsonp($scope.thisOperationUrl, function(data) {
           //$scope.operationResponse = data;
           $scope.operationResponse = data;
           $scope.showOperationResponse(event);
-          $scope.getExecutions();
+          $scope.getThisExecution();
+          $scope.operationUpdate = true;
+          $scope.getExecutions($scope.selectedExecIndex, resultsExec, undefined);
       });
-      //$scope.getExecutions();
     };
 
     $scope.showOperationResponse = function(event) {
