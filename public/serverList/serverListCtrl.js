@@ -155,14 +155,21 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.modules = modules;
     $scope.executions = executions;
     $scope.executionUrls = executionUrls;
+    $scope.theFilter = null;
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();
       // $interval.cancel($scope.selectExecutionPromise);
       $interval.cancel($scope.getThisExecutionPromise);
-      $interval.cancel($scope.getExecutionsPromise);
+      $interval.cancel($scope.getExecutionsSearchPromise);
+      $interval.cancel($scope.getExecutionsFullPromise);
       $interval.cancel($scope.selectStepPromise);
     };
+
+    // $scope.searchFilter = function (execution) {
+    //   var executionID = new RegExp($scope.theFilter, 'i');
+    //   return !$scope.theFilter || keyword.test(id.executionID);
+    // };
 
     $scope.moduleStatusImg = function(indexModule) {
         if(this.value === 'warn'){
@@ -202,23 +209,24 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.newExecutionClick = true;
       //determine whether we are selecting from a full list or search result list
       if(e) {
-        // if(!$scope.originalExecResultsObj){
+        if(Array.isArray($scope.originalExecResultsObj)){
           $scope.originalExecResultsObj = angular.copy(resultsExec);
-        // }
+        }
         $scope.isSearch = true;
         $scope.selectExecutionSearchResults (indexE, resultsExec, e);
         $scope.getExecutionsSearchPromise = $interval($scope.getExecutionsSearch, 30000, true, indexE, resultsExec, e);
+        $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
         //$scope.getExecutionsSearch(indexE, resultsExec, e);
       } else {
         $scope.isFullExecutions = true;
         $scope.selectExecutionFullList(indexE, resultsExec, e);
         $scope.getExecutionsFullPromise = $interval($scope.getExecutionsFull, 30000, false, indexE, resultsExec, e);
+        $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
       }
-      $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
+
     };
 
     $scope.selectExecutionSearchResults = function(indexE, results, e) {
-      $scope.filterText = null;
       $scope.isFullExecutions = false;
       //set currentExecsLen to executions.executions.length initially
       if(!$scope.previousExecsLen) {
@@ -263,6 +271,7 @@ angular.module('ServerList', ['SharedHTTP'])
               //only needs restart
             }
             $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
+            $scope.operationUpdate = false;
           } else {
             if(Array.isArray(results)) {
               //create new object of initial results
