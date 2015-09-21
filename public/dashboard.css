@@ -548,6 +548,8 @@ button .ng-scope a.ng-binding {color:white; text-decoration: none;}
   *::-ms-backdrop, .md-toolbar { height: 100px; } /* IE11 */
   .server-status-img { margin-top:40px;}
   *::-ms-backdrop, .server-status-img { height: 100px; } /* IE11 */
+  md-dialog { overflow:auto;}
+  *::-ms-backdrop, md-dialog { overflow:auto; } /* IE11 */
 }
 
 @media screen and (min-width:0\0) {
