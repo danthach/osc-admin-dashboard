@@ -541,6 +541,19 @@ table th[class*="col-"] {
 button .ng-scope a.ng-binding {color:white; text-decoration: none;}
 /*.md-content-overflow {overflow: hidden;}*/
 
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Open Sans Light'), local('OpenSans-Light'), url(http://themes.googleusercontent.com/static/fonts/opensans/v6/DXI1ORHCpsQm3Vp6mXoaTaRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+  unicode-range: U+26;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: local('Arial');
+}
+
 @media all and (-ms-high-contrast:none) {
   .md-tootlbar { display: -ms-flexbox; } /* IE10 */
   *::-ms-backdrop, .md-toolbar { display: -ms-flexbox; } /* IE11 */
@@ -552,10 +565,10 @@ button .ng-scope a.ng-binding {color:white; text-decoration: none;}
   *::-ms-backdrop, md-dialog { overflow:auto; } /* IE11 */
   .right-nav { margin-top:-18px;}
   *::-ms-backdrop, .right-nav { margin-top:-18px; } /* IE11 */
-  .md-dialog-container md-dialog { margin: 0px 24px 0px 24px;}
-  *::-ms-backdrop, .md-dialog-container md-dialog { margin: 0px 24px 0px 24px; } /* IE11 */
-  .material-icons { font-family: Lucida Sans Unicode, Arial Unicode MS, Arial; }
-  *::-ms-backdrop, .material-icons { font-family: Lucida Sans Unicode, Arial Unicode MS, Arial; } /* IE11 */
+  .md-dialog-container md-dialog { padding: 0px 24px 0px 24px;}
+  *::-ms-backdrop, .md-dialog-container md-dialog { padding: 0px 24px 0px 24px; } /* IE11 */
+  .material-icons { font-family: 'Open Sans', Fallback, sans-serif;}
+  *::-ms-backdrop, .material-icons { font-family: 'Open Sans', Fallback, sans-serif; } /* IE11 */
 }
 
 @media screen and (min-width:0\0) {

@@ -19,7 +19,7 @@
 		      <md-tab label="modules">
 		      	<md-content layout="row" layout-wrap>
 			      	<div flex="20" ng-repeat="(key, value) in modules">
-						  	<md-card class="module-status-card" ng-click="getModuleDetails('module', $event); $event.stopPropagation();">
+						  	<md-card class="module-status-card" ng-click="getModuleDetails($event);">
 						    	<md-card-content>
 						        <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
 						      	<h3 class="server-host">{{key}}</h3>
