@@ -149,6 +149,7 @@ angular.module('ServerList', ['SharedHTTP'])
   .controller('ServerListBottomSheetCtrl',['$scope', '$mdBottomSheet', '$mdDialog', '$interval', 'HTTPService', 'servers', 'serverUrl', 'thisServer', 'modules', 'executions', 'executionUrls',
     function($scope, $mdBottomSheet, $mdDialog, $interval, HTTPService, servers, serverUrl, thisServer, modules, executions, executionUrls) {
 
+    $scope.dragging = 'no-transform';
     $scope.server = servers;
     $scope.serverUrl = serverUrl;
     $scope.thisServer = thisServer;
@@ -156,6 +157,49 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.executions = executions;
     $scope.executionUrls = executionUrls;
     $scope.theFilter = null;
+
+    $scope.getExecutionsFullInitial = function(indexE, results, e) {
+      HTTPService.jsonp($scope.serverUrl, function(data) {
+          $scope.executions = data;
+          $scope.getExecutionUrls();
+      });
+    };
+
+    $scope.startExecutionInterval = function(indexE, resultsExec, e) {
+      //kill off existing intervals
+      $interval.cancel($scope.getThisExecutionPromise);
+      $interval.cancel($scope.getExecutionsFullInitialPromise);
+      $interval.cancel($scope.getExecutionsSearchPromise);
+      $interval.cancel($scope.getExecutionsFullPromise);
+      $interval.cancel($scope.selectStepPromise);
+      $interval.cancel($scope.selectTaskPromise);
+      $scope.highlightSelectedTask = undefined;
+      $scope.highlightSelectedStep = undefined;
+      $scope.newExecutionClick = true;
+      //determine whether we are selecting from a full list or search result list
+      if(e) {
+        if(Array.isArray(resultsExec)){
+          $scope.originalExecResultsObj = angular.copy(resultsExec);
+        }
+        $scope.isSearch = true;
+        $scope.selectExecutionSearchResults (indexE, resultsExec, e);
+        $scope.getExecutionsSearchPromise = $interval($scope.getExecutionsSearch, 30000, true, indexE, resultsExec, e);
+        $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
+        //$scope.getExecutionsSearch(indexE, resultsExec, e);
+      } else {
+        if(indexE !== undefined || $scope.selectedExecIndex) {
+          $scope.isFullExecutions = true;
+          $scope.selectExecutionFullList(indexE, resultsExec, e);
+          $scope.getExecutionsFullPromise = $interval($scope.getExecutionsFull, 30000, false, indexE, resultsExec, e);
+          $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
+        } else {
+          $scope.isFullExecutions = true;
+          $scope.getExecutionsFullInitialPromise = $interval($scope.getExecutionsFullInitial, 30000, false, indexE, resultsExec, e);
+        }
+      }
+    };
+
+    $scope.startExecutionInterval(undefined, undefined, undefined);
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();
@@ -197,33 +241,48 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.thisStep = '';
     };
 
-    $scope.startExecutionInterval = function(indexE, resultsExec, e) {
-      //kill off existing intervals
-      $interval.cancel($scope.getThisExecutionPromise);
-      $interval.cancel($scope.getExecutionsSearchPromise);
-      $interval.cancel($scope.getExecutionsFullPromise);
-      $interval.cancel($scope.selectStepPromise);
-      $interval.cancel($scope.selectTaskPromise);
-      $scope.highlightSelectedTask = undefined;
-      $scope.highlightSelectedStep = undefined;
-      $scope.newExecutionClick = true;
-      //determine whether we are selecting from a full list or search result list
-      if(e) {
-        if(Array.isArray(resultsExec)){
-          $scope.originalExecResultsObj = angular.copy(resultsExec);
-        }
-        $scope.isSearch = true;
-        $scope.selectExecutionSearchResults (indexE, resultsExec, e);
-        $scope.getExecutionsSearchPromise = $interval($scope.getExecutionsSearch, 30000, true, indexE, resultsExec, e);
-        $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
-        //$scope.getExecutionsSearch(indexE, resultsExec, e);
-      } else {
-        $scope.isFullExecutions = true;
-        $scope.selectExecutionFullList(indexE, resultsExec, e);
-        $scope.getExecutionsFullPromise = $interval($scope.getExecutionsFull, 30000, false, indexE, resultsExec, e);
-        $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
+    $scope.selectExecutionFullList = function(indexE, results, e) {
+      $scope.isSearch = false;
+      //set currentExecsLen to executions.executions.length initially
+      if(!$scope.previousExecsLen) {
+        $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
       }
-
+      if($scope.previousExecsLen === $scope.executions.executions.length) {
+        if(indexE !== undefined) {
+          if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
+            indexE = $scope.selectedExecIndex;
+          }
+          $scope.newExecutionClick = false;
+          // if(!$scope.executionPingUrl && e !== "") {
+          //   if($scope.executionUrls) {
+          //     //user clicks search but doesn't enter any value in field
+          //     $scope.thisExecutionUrl = $scope.executionUrls[indexE];
+          //     $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+          //   } else {
+          //     // $scope.thisExecutionUrl = executionUrls[indexE];
+          //     // $scope.executionPingUrl = executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+          //   }
+          // } else {
+              //after a search, interval runs, which doesn't return indexE, result, or e
+              //$scope.getExecutionUrls();
+          $scope.thisExecutionUrl = $scope.executionUrls[indexE];
+          $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+          // }
+          if(indexE != undefined) {
+            //save the index so when interval runs, it remembers previous index
+            $scope.selectedExecIndex = indexE;
+          }
+        }
+      } else {
+        //shift the index the difference of currentExecsLen and executions.executions.length
+        var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
+        $scope.selectedExecIndex = $scope.selectedExecIndex + indexDifference;
+        $scope.previousExecsLen = $scope.executions.executions.length;
+      }
+      $scope.highlightSelectedExec = function(indexE) {
+        return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
+      };
+      $scope.getThisExecution();
     };
 
     $scope.selectExecutionSearchResults = function(indexE, results, e) {
@@ -316,58 +375,6 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.getThisExecution();
     };
 
-    //index is where you are in the array
-    //results can be an array of searched results, or it can be an object of previous result.
-    //e is the search string
-    //when interval runs, all the parameters become undefined
-    $scope.selectExecutionFullList = function(indexE, results, e) {
-      $scope.isSearch = false;
-      //set currentExecsLen to executions.executions.length initially
-      if(!$scope.previousExecsLen) {
-        $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
-      }
-      if($scope.previousExecsLen === $scope.executions.executions.length) {
-          if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
-            indexE = $scope.selectedExecIndex;
-          }
-          $scope.newExecutionClick = false;
-          // if(!$scope.executionPingUrl && e !== "") {
-          //   if($scope.executionUrls) {
-          //     //user clicks search but doesn't enter any value in field
-          //     $scope.thisExecutionUrl = $scope.executionUrls[indexE];
-          //     $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-          //   } else {
-          //     // $scope.thisExecutionUrl = executionUrls[indexE];
-          //     // $scope.executionPingUrl = executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-          //   }
-          // } else {
-              //after a search, interval runs, which doesn't return indexE, result, or e
-              //$scope.getExecutionUrls();
-              $scope.thisExecutionUrl = $scope.executionUrls[indexE];
-              $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-          // }
-        if(indexE != undefined) {
-          //save the index so when interval runs, it remembers previous index
-          $scope.selectedExecIndex = indexE;
-        }
-      } else {
-        //shift the index the difference of currentExecsLen and executions.executions.length
-        var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
-        $scope.selectedExecIndex = $scope.selectedExecIndex + indexDifference;
-        $scope.previousExecsLen = $scope.executions.executions.length;
-      }
-      $scope.highlightSelectedExec = function(indexE) {
-        return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
-      };
-      $scope.getThisExecution();
-    };
-
-    $scope.getThisExecution = function() {
-      HTTPService.jsonp($scope.executionPingUrl, function(data) {
-          $scope.executionPing = data;
-      });
-    };
-
     $scope.getExecutionsSearch = function(indexE, results, e) {
       HTTPService.jsonp($scope.serverUrl, function(data) {
           $scope.executions = data;
@@ -401,6 +408,11 @@ angular.module('ServerList', ['SharedHTTP'])
         $scope.executionUrls = justUrls;
     };
 
+    $scope.getThisExecution = function() {
+      HTTPService.jsonp($scope.executionPingUrl, function(data) {
+          $scope.executionPing = data;
+      });
+    };
     // $scope.getSearchExecutionUrls = function() {
     //     var justUrls = [];
     //     var executionResult = $scope.originalExecResultsObj;

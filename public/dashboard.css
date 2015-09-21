@@ -232,6 +232,10 @@ i {
   .right-nav {
     margin-top:-25px;
   }
+  .no-transform {
+    transform: none !important;
+    transition: none;
+  }
 }
 .img-responsive {
   display: block;
@@ -541,20 +545,23 @@ table th[class*="col-"] {
 button .ng-scope a.ng-binding {color:white; text-decoration: none;}
 /*.md-content-overflow {overflow: hidden;}*/
 
-
 @media all and (-ms-high-contrast:none) {
-  .md-tootlbar { display: -ms-flexbox; } /* IE10 */
-  *::-ms-backdrop, .md-toolbar { display: -ms-flexbox; } /* IE11 */
-  .table-top-margin { margin-top:40px;}
-  *::-ms-backdrop, .md-toolbar { height: 100px; } /* IE11 */
-  .server-status-img { height: 100px; }
-  *::-ms-backdrop, .server-status-img { height: 100px; } /* IE11 */
+/*  .md-toolbar { display: -ms-flexbox; }*/ /* IE10 */
+/*  *::-ms-backdrop, .md-toolbar { display: -ms-flexbox; }*/ /* IE11 */
+  .table-top-margin { margin-top:40px; }
+  *::-ms-backdrop, .table-top-margin  { margin-top:40px; }
+  .md-toolbar { height: 100px; }
+  *::-ms-backdrop, .md-toolbar { height: 100px; }
+  .server-status-img { height: 100px; width: 100px; }
+  *::-ms-backdrop, .server-status-img { height: 100px; width: 100px; }
   md-dialog { overflow:auto;}
-  *::-ms-backdrop, md-dialog { overflow:auto; } /* IE11 */
+  *::-ms-backdrop, md-dialog { overflow:auto; }
   .right-nav { margin-top:-18px;}
-  *::-ms-backdrop, .right-nav { margin-top:-18px; } /* IE11 */
+  *::-ms-backdrop, .right-nav { margin-top:-18px; }
   .md-dialog-container md-dialog { padding: 0px 24px 0px 24px;}
-  *::-ms-backdrop, .md-dialog-container md-dialog { padding: 0px 24px 0px 24px; } /* IE11 */
+  *::-ms-backdrop, .md-dialog-container md-dialog { padding: 0px 24px 0px 24px; }
+  .no-transform { transform: none !important; }
+  *::-ms-backdrop, .no-transform { transform: none !important; }
 }
 
 @media screen and (min-width:0\0) {
