@@ -1,4 +1,4 @@
-<md-bottom-sheet class="md-list md-has-header server-list-bottom-sheet">
+<md-bottom-sheet class="md-content-overflow md-list md-has-header server-list-bottom-sheet">
 	<div class="container" layout="row" layout-wrap>
 		<div flex="100" layout="row" layout-align="end">
 			<p class="close-btn material-icons" ng-click="closeBottomSheet()">&#xE888;</p>
@@ -19,7 +19,7 @@
 		      <md-tab label="modules">
 		      	<md-content layout="row" layout-wrap>
 			      	<div flex="20" ng-repeat="(key, value) in modules">
-						  	<md-card class="module-status-card" ng-click="getModuleDetails($event)">
+						  	<md-card class="module-status-card" ng-click="getModuleDetails('module', $event)">
 						    	<md-card-content>
 						        <div class="server-status-img" ng-style="{{moduleStatusImg($index)}}"></div>
 						      	<h3 class="server-host">{{key}}</h3>
@@ -86,7 +86,7 @@
 					            <div class="exec-search-box" ng-show="showStepSearch" flex>
 					            	<md-input-container flex>
 							          <label>Search Steps...</label>
-							          <input ng-model="s">
+							          <input ng-model="s.label">
 							        	</md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
@@ -119,11 +119,11 @@
 					            <div class="exec-search-box" ng-show="showTaskSearch" flex>
 					            	<md-input-container flex>
 							          <label>Search Tasks...</label>
-							          <input ng-model="t">
+							          <input ng-model="t.type">
 							        	</md-input-container>
 					            </div>
 						         <table class="table table-hover clickable-table table-top-margin">
-						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as resultsTask" ng-click="startTaskInterval(key, resultsTask, s)" ng-class="highlightSelectedTask(key)">
+						          	<tr ng-repeat="(key, value) in thisStep.tasks | filter:t as resultsTask" ng-click="startTaskInterval($event, key, resultsTask, t)" ng-class="highlightSelectedTask(key)">
 						          		<td>{{value.type}}</td>
 						          		<td>{{value.status}}</td>
 <!-- 						          		<td class="button-cell">
@@ -148,7 +148,7 @@
 					  	<md-card>
 					    	<md-card-content id="module-action-card" layout="row">
 					    		<div ng-repeat="(key, value) in thisExecutionUrl | filter:e as resultsExec">
-						    		<button class="md-raised md-primary md-button md-default-theme" ng-click="selectOperation(value, resultsExec)" flex>
+						    		<button class="md-raised md-primary md-button md-default-theme" ng-click="selectOperation($event, value, resultsExec)" flex>
                       <span class="ng-scope">{{key}}</span>
 						    			<div class="md-ripple-container"></div>
 						    		</button>

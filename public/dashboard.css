@@ -15,6 +15,15 @@ i {
 .nav-menu-icon {
   margin-top: 5px;
 }
+.profile-icon-text-arrow::before {
+  float:left;
+}
+.profile-icon-text {
+  float:left;
+}
+.profile-icon-text-arrow {
+  float:left;
+}
 #my-profile, #manage-users {
   min-width: 440px;
 }
@@ -218,6 +227,11 @@ i {
   position: absolute;
   right: 0;
   margin-top: 6px;
+}
+@-moz-document url-prefix(){
+  .right-nav {
+    margin-top:-25px;
+  }
 }
 .img-responsive {
   display: block;
@@ -525,4 +539,20 @@ table th[class*="col-"] {
 }
 
 button .ng-scope a.ng-binding {color:white; text-decoration: none;}
-.md-content-overflow {overflow: hidden;}
+/*.md-content-overflow {overflow: hidden;}*/
+
+@media all and (-ms-high-contrast:none) {
+  .md-tootlbar { display: -ms-flexbox; } /* IE10 */
+  *::-ms-backdrop, .md-toolbar { display: -ms-flexbox; } /* IE11 */
+  .table-top-margin { margin-top:40px;}
+  *::-ms-backdrop, .md-toolbar { height: 100px; } /* IE11 */
+  .server-status-img { margin-top:40px;}
+  *::-ms-backdrop, .server-status-img { height: 100px; } /* IE11 */
+}
+
+@media screen and (min-width:0\0) {
+  // Seems to fix flexbox type layout issues in IE10
+  span[flex], md-card-content, md-dialog-content {
+    display: block;
+  }
+}

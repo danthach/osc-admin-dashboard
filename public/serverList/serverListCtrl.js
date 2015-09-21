@@ -209,7 +209,7 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.newExecutionClick = true;
       //determine whether we are selecting from a full list or search result list
       if(e) {
-        if(Array.isArray($scope.originalExecResultsObj)){
+        if(Array.isArray(resultsExec)){
           $scope.originalExecResultsObj = angular.copy(resultsExec);
         }
         $scope.isSearch = true;
@@ -418,12 +418,12 @@ angular.module('ServerList', ['SharedHTTP'])
     //     $scope.executionSearchUrls = justUrls;
     // };
 
-    $scope.selectOperation = function(operationUrl, resultsExec) {
+    $scope.selectOperation = function(event, operationUrl, resultsExec) {
         $scope.thisOperationUrl = operationUrl + '?callback=JSON_CALLBACK';
-        $scope.performOperation(operationUrl, resultsExec);
+        $scope.performOperation(event, operationUrl, resultsExec);
     };
 
-    $scope.performOperation = function(operationUrl, resultsExec) {
+    $scope.performOperation = function(event, operationUrl, resultsExec) {
       HTTPService.jsonp($scope.thisOperationUrl, function(data) {
           //$scope.operationResponse = data;
           $scope.operationResponse = data;
@@ -478,7 +478,7 @@ angular.module('ServerList', ['SharedHTTP'])
       };
     };
 
-    $scope.getModuleDetails = function(event) {
+    $scope.getModuleDetails = function(what, event) {
       var url = 'http://' + $scope.thisServer.message.hostname + '/ping/module/' + this.key + '?callback=JSON_CALLBACK';
       var d = '';
       HTTPService.jsonp(url, function(data) {
@@ -492,11 +492,17 @@ angular.module('ServerList', ['SharedHTTP'])
         // var convertedDateString = $scope.thisModule.date.toLocaleString();
         // convertedDateString = convertedDateString.replace('at ', '');
         // $scope.thisModule.date = new Date(convertedDateString);
-        $scope.showModuleDetails(event);
+        $scope.showModuleDetails(what, event);
       });
     }
 
-    $scope.showModuleDetails = function(event) {
+    $scope.showModuleDetails = function(what, event) {
+      alert(what + ' clicked');
+      if(event){
+        event.stopPropagation();
+        event.preventDefault();
+      }
+
       $mdDialog.show({
         controller: 'ModuleDetailsModalCtrl',
         templateUrl: 'serverList/templates/moduleDetailsModal.html',
@@ -508,15 +514,15 @@ angular.module('ServerList', ['SharedHTTP'])
       });
     };
 
-    $scope.startTaskInterval = function(indexT, results, e) {
+    $scope.startTaskInterval = function(event, indexT, results, e) {
       //kill off existing intervals
       $interval.cancel($scope.selectTaskPromise);
       $scope.newTaskClick = true;
-      $scope.showTaskDetails(indexT, results, e);
+      $scope.showTaskDetails(event, indexT, results, e);
       $scope.selectTaskPromise = $interval($scope.showTaskDetails, 15000, false);
     };
 
-    $scope.showTaskDetails = function(indexT, results, t) {
+    $scope.showTaskDetails = function(event, indexT, results, t) {
       if(!$scope.newTaskClick && indexT != $scope.selectedTaskIndex) {
         indexT = $scope.selectedTaskIndex;
       }
@@ -530,8 +536,7 @@ angular.module('ServerList', ['SharedHTTP'])
       if(indexT != undefined) {
         $scope.selectedTaskIndex = indexT;
       }
-
-      $scope.highlightSelectedTask = function(indexT) {
+      $scope.highlightSelectedTask = function(event, indexT) {
         return indexT === $scope.selectedTaskIndex ? 'highlight-select' : undefined;
       };
       console.log($scope.thisTask);
@@ -543,11 +548,11 @@ angular.module('ServerList', ['SharedHTTP'])
         }
       });
       if(event) {
-        $scope.openTaskModal();
+        $scope.openTaskModal(event);
       }
     };
 
-    $scope.openTaskModal = function() {
+    $scope.openTaskModal = function(event) {
       $mdDialog.show({
         controller: 'TaskStatusModalCtrl',
         templateUrl: 'serverList/templates/taskStatusModal.html',

@@ -8,26 +8,26 @@
         <div flex="20" class="right-nav" layout="column" layout-align="center center">
           <md-menu>
             <md-button ng-click="$mdOpenMenu()">
-              <i class="material-icons person-icon">&#xE7FD;</i>
+              <i class="material-icons person-icon profile-icon-text">&#xE7FD;</i>
               {{masterCtrl.slicedUserEmail}}
-              <i class="material-icons">&#xE5CF;</i>
+              <i class="material-icons profile-icon-text-arrow">&#xE5CF;</i>
             </md-button>
             <md-menu-content width="4">
               <md-menu-item ng-if="masterCtrl.loggedIn">
                 <md-button ng-click="masterCtrl.showMyProfile($event)">
-                  <i class="material-icons nav-menu-icon" md-menu-align-target>&#xE873;</i>
+                  <i class="material-icons nav-menu-icon profile-icon-text" md-menu-align-target>&#xE873;</i>
                   &nbsp; My Profile
                 </md-button>
               </md-menu-item>
               <md-menu-item ng-if="masterCtrl.admin && masterCtrl.loggedIn">
                 <md-button ng-click="masterCtrl.showManageUsers($event)">
-                <i class="material-icons nav-menu-icon" md-menu-align-target>&#xE7EF;</i>
+                <i class="material-icons nav-menu-icon profile-icon-text" md-menu-align-target>&#xE7EF;</i>
                   &nbsp; Manage Users
                 </md-button>
               </md-menu-item>
               <md-menu-item ng-if="masterCtrl.loggedIn">
                 <md-button ng-click="masterCtrl.logout()">
-                <i class="material-icons nav-menu-icon" md-menu-align-target>&#xE879;</i>
+                <i class="material-icons nav-menu-icon profile-icon-text" md-menu-align-target>&#xE879;</i>
                   &nbsp; Log Out
                 </md-button>
               </md-menu-item>
