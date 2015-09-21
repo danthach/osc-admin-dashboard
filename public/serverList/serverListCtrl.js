@@ -496,13 +496,7 @@ angular.module('ServerList', ['SharedHTTP'])
       });
     }
 
-    $scope.showModuleDetails = function(what, event) {
-      //alert(what + ' clicked');
-      if(event){
-        event.stopPropagation();
-        event.preventDefault();
-      }
-
+    $scope.showModuleDetails = function(event) {
       $mdDialog.show({
         controller: 'ModuleDetailsModalCtrl',
         templateUrl: 'serverList/templates/moduleDetailsModal.html',
