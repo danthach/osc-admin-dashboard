@@ -497,7 +497,7 @@ angular.module('ServerList', ['SharedHTTP'])
     }
 
     $scope.showModuleDetails = function(what, event) {
-      alert(what + ' clicked');
+      //alert(what + ' clicked');
       if(event){
         event.stopPropagation();
         event.preventDefault();
