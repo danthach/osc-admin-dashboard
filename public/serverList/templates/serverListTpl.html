@@ -6,7 +6,7 @@
     </md-button>
     <md-input-container ng-show="showServerSearch" flex="25">
       <label>Search Servers...</label>
-      <input ng-model="s">
+      <input ng-model="s.hostname">
     </md-input-container>
     <i class="material-icons close-icon" ng-show="showServerSearch" ng-click="showServerSearch = !showServerSearch; s = ''">
       &#xE888;

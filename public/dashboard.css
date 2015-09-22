@@ -233,8 +233,8 @@ i {
     margin-top:-25px;
   }
   .no-transform {
-    transform: none !important;
-    transition: none;
+    transform: translate3d(0px, 50px, 0px) !important;
+    transition: none !important;
   }
 }
 .img-responsive {
@@ -560,8 +560,8 @@ button .ng-scope a.ng-binding {color:white; text-decoration: none;}
   *::-ms-backdrop, .right-nav { margin-top:-18px; }
   .md-dialog-container md-dialog { padding: 0px 24px 0px 24px;}
   *::-ms-backdrop, .md-dialog-container md-dialog { padding: 0px 24px 0px 24px; }
-  .no-transform { transform: none !important; }
-  *::-ms-backdrop, .no-transform { transform: none !important; }
+  .no-transform { transform: translate3d(0px, 50px, 0px) !important; transition: none !important; }
+  *::-ms-backdrop, .no-transform { transform: translate3d(0px, 50px, 0px) !important; transition: none !important; }
 }
 
 @media screen and (min-width:0\0) {
