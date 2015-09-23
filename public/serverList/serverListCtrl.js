@@ -158,269 +158,291 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.executionUrls = executionUrls;
     $scope.theFilter = null;
 
-    // $scope.getExecutionsFullInitial = function(indexE, results, e) {
-    //   HTTPService.jsonp($scope.serverUrl, function(data) {
-    //       $scope.executions = data;
-    //       $scope.getExecutionUrls();
-    //   });
+    $scope.getExecutionsFullInitial = function(indexE, results, e) {
+      HTTPService.jsonp($scope.serverUrl, function(data) {
+          $scope.executions = data;
+          $scope.getExecutionUrls();
+      });
+    };
+
+    $scope.startExecutionInterval = function(indexE, resultsExec, e) {
+      //kill off existing intervals
+      $interval.cancel($scope.getThisExecutionPromise);
+      //$interval.cancel($scope.getExecutionsFullInitialPromise);
+      $interval.cancel($scope.getExecutionsSearchPromise);
+      $interval.cancel($scope.getExecutionsFullPromise);
+      $interval.cancel($scope.selectStepPromise);
+      $interval.cancel($scope.selectTaskPromise);
+      $scope.highlightSelectedTask = undefined;
+      $scope.highlightSelectedStep = undefined;
+      $scope.highlightSelectedExec = '';
+      $scope.highlightSelectedTask = '';
+      $scope.highlightSelectedStep = '';
+      $scope.executionPing = '';
+      $scope.thisStep = '';
+      $scope.newExecutionClick = true;
+      //determine whether we are selecting from a full list or search result list
+      if(e) {
+        if(Array.isArray(resultsExec)){
+          $scope.originalExecResultsObj = angular.copy(resultsExec);
+        }
+        $scope.isSearch = true;
+        $scope.selectExecutionSearchResults (indexE, resultsExec, e);
+        $scope.getExecutionsSearchPromise = $interval($scope.getExecutionsSearch, 30000, true, indexE, resultsExec, e);
+        $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
+        //$scope.getExecutionsSearch(indexE, resultsExec, e);
+      } else {
+        if(indexE !== undefined || $scope.selectedExecIndex) {
+          $scope.isFullExecutions = true;
+          $scope.selectExecutionFullList(indexE, resultsExec, e);
+          $scope.getExecutionsFullPromise = $interval($scope.getExecutionsFull, 30000, false, indexE, resultsExec, e);
+          $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
+        } else {
+          $scope.isFullExecutions = true;
+          $scope.getExecutionsFullInitialPromise = $interval($scope.getExecutionsFullInitial, 30000, false, indexE, resultsExec, e);
+        }
+      }
+    };
+
+    $scope.startExecutionInterval(undefined, undefined, undefined);
+
+    $scope.closeBottomSheet = function() {
+      $mdBottomSheet.hide();
+      // $interval.cancel($scope.selectExecutionPromise);
+      $interval.cancel($scope.getThisExecutionPromise);
+      $interval.cancel($scope.getExecutionsSearchPromise);
+      $interval.cancel($scope.getExecutionsFullPromise);
+      $interval.cancel($scope.getExecutionsFullInitialPromise);
+      $interval.cancel($scope.selectStepPromise);
+    };
+
+    // $scope.searchFilter = function (execution) {
+    //   var executionID = new RegExp($scope.theFilter, 'i');
+    //   return !$scope.theFilter || keyword.test(id.executionID);
     // };
 
-    // $scope.startExecutionInterval = function(indexE, resultsExec, e) {
-    //   //kill off existing intervals
-    //   $interval.cancel($scope.getThisExecutionPromise);
-    //   //$interval.cancel($scope.getExecutionsFullInitialPromise);
-    //   $interval.cancel($scope.getExecutionsSearchPromise);
-    //   $interval.cancel($scope.getExecutionsFullPromise);
-    //   $interval.cancel($scope.selectStepPromise);
-    //   $interval.cancel($scope.selectTaskPromise);
-    //   $scope.highlightSelectedTask = undefined;
-    //   $scope.highlightSelectedStep = undefined;
-    //   $scope.highlightSelectedExec = '';
-    //   $scope.highlightSelectedTask = '';
-    //   $scope.highlightSelectedStep = '';
-    //   $scope.executionPing = '';
-    //   $scope.thisStep = '';
-    //   $scope.newExecutionClick = true;
-    //   //determine whether we are selecting from a full list or search result list
-    //   if(e) {
-    //     if(Array.isArray(resultsExec)){
-    //       $scope.originalExecResultsObj = angular.copy(resultsExec);
-    //     }
-    //     $scope.isSearch = true;
-    //     $scope.selectExecutionSearchResults (indexE, resultsExec, e);
-    //     $scope.getExecutionsSearchPromise = $interval($scope.getExecutionsSearch, 30000, true, indexE, resultsExec, e);
-    //     $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
-    //     //$scope.getExecutionsSearch(indexE, resultsExec, e);
-    //   } else {
-    //     if(indexE !== undefined || $scope.selectedExecIndex) {
-    //       $scope.isFullExecutions = true;
-    //       $scope.selectExecutionFullList(indexE, resultsExec, e);
-    //       $scope.getExecutionsFullPromise = $interval($scope.getExecutionsFull, 30000, false, indexE, resultsExec, e);
-    //       $scope.getThisExecutionPromise = $interval($scope.getThisExecution, 30000, false);
-    //     } else {
-    //       $scope.isFullExecutions = true;
-    //       $scope.getExecutionsFullInitialPromise = $interval($scope.getExecutionsFullInitial, 30000, false, indexE, resultsExec, e);
-    //     }
-    //   }
-    // };
+    $scope.moduleStatusImg = function(indexModule) {
+        if(this.value === 'warn'){
+          return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
+        } else if(this.value === 'error'){
+          return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
+        } else if (this.value === 'good'){
+          return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+        } else {
+          return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
+        }
+    };
 
-    // $scope.startExecutionInterval(undefined, undefined, undefined);
+    $scope.showExecSearch = function() {
+      $scope.reasonForSearch = !$scope.reasonForSearch;
+      $interval.cancel($scope.getExecutionsSearchPromise);
+      $interval.cancel($scope.getExecutionsFullPromise);
+      $interval.cancel($scope.getThisExecutionPromise);
+      $interval.cancel($scope.selectStepPromise);
+      $interval.cancel($scope.selectTaskPromise);
+      $scope.highlightSelectedExec = '';
+      $scope.highlightSelectedTask = '';
+      $scope.highlightSelectedStep = '';
+      $scope.executionPing = '';
+      $scope.thisStep = '';
+    };
 
-    // $scope.closeBottomSheet = function() {
-    //   $mdBottomSheet.hide();
-    //   // $interval.cancel($scope.selectExecutionPromise);
-    //   $interval.cancel($scope.getThisExecutionPromise);
-    //   $interval.cancel($scope.getExecutionsSearchPromise);
-    //   $interval.cancel($scope.getExecutionsFullPromise);
-    //   $interval.cancel($scope.getExecutionsFullInitialPromise);
-    //   $interval.cancel($scope.selectStepPromise);
-    // };
+    $scope.selectExecutionFullList = function(indexE, results, e) {
+      $scope.isSearch = false;
+      //set currentExecsLen to executions.executions.length initially
+      if(!$scope.previousExecsLen) {
+        $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
+      }
+      //when the interval runs, the index does not become the index anymore so we stored the previous index in $scope.selectedExecIndex
+      if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
+        indexE = $scope.selectedExecIndex;
+      }
+      if($scope.previousExecsLen === $scope.executions.executions.length) {
+        if ($scope.operationUpdate) {
+          //$scope.getSearchExecutionUrls();
+          //$scope.thisExecutionUrl = $scope.executionUrls[indexE];
+          var operationPause = $scope.thisExecutionUrl['restart'];
+          var operationResume = $scope.thisExecutionUrl['restart'];
+          var operationForce = $scope.thisExecutionUrl['restart'];
+          var operationKill = $scope.thisExecutionUrl['restart'];
+          operationPause.replace("restart", "pause");
+          operationResume.replace("restart", "resume");
+          operationForce.replace("restart", "force");
+          operationKill.replace("restart", "kill");
 
-    // // $scope.searchFilter = function (execution) {
-    // //   var executionID = new RegExp($scope.theFilter, 'i');
-    // //   return !$scope.theFilter || keyword.test(id.executionID);
-    // // };
+          if($scope.thisExecutionUrl['pause']) {delete $scope.thisExecutionUrl['pause'];}
+          if($scope.thisExecutionUrl['resume']) {delete $scope.thisExecutionUrl['resume'];}
+          if($scope.thisExecutionUrl['kill']) {delete $scope.thisExecutionUrl['kill']};
+          if($scope.thisExecutionUrl['force']) {delete $scope.thisExecutionUrl['force']};
+          //no way to get current operation urls for search results, so building them manually.
+          if($scope.executionPing.message.executionDetails.status === 'paused') {
+            $scope.thisExecutionUrl['resume'] = operationResume;
+          } else if ($scope.executionPing.message.executionDetails.status === 'complete') {
+            //only needs restart
+          } else if ($scope.executionPing.message.executionDetails.status === 'inProgress') {
+            $scope.thisExecutionUrl['pause'] = operationPause;
+            $scope.thisExecutionUrl['force'] = operationForce
+            $scope.thisExecutionUrl['kill'] = operationKill;
+          } else if ($scope.executionPing.message.executionDetails.status === 'errored') {
+            //only needs restart
+          }
+          $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+          $scope.operationUpdate = false;
+        }else {
+          if(indexE !== undefined) {
+            if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
+              indexE = $scope.selectedExecIndex;
+            }
+            $scope.thisExecutionUrl = $scope.executionUrls[indexE];
+            $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+            // }
+            if(indexE != undefined) {
+              //save the index so when interval runs, it remembers previous index
+              $scope.selectedExecIndex = indexE;
+            }
+          }
+        }
+        $scope.newExecutionClick = false;
+      } else {
+        //shift the index the difference of currentExecsLen and executions.executions.length
+        var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
+        $scope.selectedExecIndex = $scope.selectedExecIndex + indexDifference;
+        $scope.previousExecsLen = $scope.executions.executions.length;
+      }
+      $scope.highlightSelectedExec = function(indexE) {
+        return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
+      };
+      $scope.getThisExecution();
+    };
 
-    // $scope.moduleStatusImg = function(indexModule) {
-    //     if(this.value === 'warn'){
-    //       return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
-    //     } else if(this.value === 'error'){
-    //       return { "background": "url('img/server-err-sm.png') no-repeat", "background-size": "cover" };
-    //     } else if (this.value === 'good'){
-    //       return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-    //     } else {
-    //       return { "background": "url(img/server-ok-sm.png) no-repeat", "background-size": "cover" };
-    //     }
-    // };
+    $scope.selectExecutionSearchResults = function(indexE, results, e) {
+      $scope.isFullExecutions = false;
+      //set currentExecsLen to executions.executions.length initially
+      if(!$scope.previousExecsLen) {
+        $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
+      }
+      //when the interval runs, the index does not become the index anymore so we stored the previous index in $scope.selectedExecIndex
+      if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
+        indexE = $scope.selectedExecIndex;
+      }
+      if($scope.previousExecsLen === $scope.executions.executions.length) {
+          $interval.cancel($scope.getThisExecutionPromise);
+          $interval.cancel($scope.getExecutionsSearchPromise);
+          if ($scope.operationUpdate) {
+            //$scope.getSearchExecutionUrls();
+            //$scope.thisExecutionUrl = $scope.executionUrls[indexE];
+            var operationPause = $scope.thisExecutionUrl['restart'];
+            var operationResume = $scope.thisExecutionUrl['restart'];
+            var operationForce = $scope.thisExecutionUrl['restart'];
+            var operationKill = $scope.thisExecutionUrl['restart'];
+            operationPause.replace("restart", "pause");
+            operationResume.replace("restart", "resume");
+            operationForce.replace("restart", "force");
+            operationKill.replace("restart", "kill");
 
-    // $scope.showExecSearch = function() {
-    //   $scope.reasonForSearch = !$scope.reasonForSearch;
-    //   $interval.cancel($scope.getExecutionsSearchPromise);
-    //   $interval.cancel($scope.getExecutionsFullPromise);
-    //   $interval.cancel($scope.getThisExecutionPromise);
-    //   $interval.cancel($scope.selectStepPromise);
-    //   $interval.cancel($scope.selectTaskPromise);
-    //   $scope.highlightSelectedExec = '';
-    //   $scope.highlightSelectedTask = '';
-    //   $scope.highlightSelectedStep = '';
-    //   $scope.executionPing = '';
-    //   $scope.thisStep = '';
-    // };
+            if($scope.thisExecutionUrl['pause']) {delete $scope.thisExecutionUrl['pause'];}
+            if($scope.thisExecutionUrl['resume']) {delete $scope.thisExecutionUrl['resume'];}
+            if($scope.thisExecutionUrl['kill']) {delete $scope.thisExecutionUrl['kill']};
+            if($scope.thisExecutionUrl['force']) {delete $scope.thisExecutionUrl['force']};
+            //no way to get current operation urls for search results, so building them manually.
+            if($scope.executionPing.message.executionDetails.status === 'paused') {
+              $scope.thisExecutionUrl['resume'] = operationResume;
+            } else if ($scope.executionPing.message.executionDetails.status === 'complete') {
+              //only needs restart
+            } else if ($scope.executionPing.message.executionDetails.status === 'inProgress') {
+              $scope.thisExecutionUrl['pause'] = operationPause;
+              $scope.thisExecutionUrl['force'] = operationForce
+              $scope.thisExecutionUrl['kill'] = operationKill;
+            } else if ($scope.executionPing.message.executionDetails.status === 'errored') {
+              //only needs restart
+            }
+            $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
+            $scope.operationUpdate = false;
+          } else {
+            if(Array.isArray(results)) {
+              //create new object of initial results
+              //$scope.originalExecResultsObj = angular.copy(results);
+              var resultUrls = {};
+              if(results[indexE].ping) {resultUrls.ping = results[indexE].ping}
+              if(results[indexE].restart) {resultUrls.restart = results[indexE].restart}
+              if(results[indexE].kill) {resultUrls.kill = results[indexE].kill}
+              if(results[indexE].pause) {resultUrls.pause = results[indexE].pause}
+              if(results[indexE].resume) {resultUrls.resume = results[indexE].resume}
+              $scope.thisExecutionUrl = resultUrls;
+              $scope.executionPingUrl = results[indexE].ping + '?callback=JSON_CALLBACK';
+            } else {
+              //display original execution list after a search, e= ""
+              var resultUrls = {};
+              if($scope.originalExecResultsObj[indexE].ping) {resultUrls.ping = $scope.originalExecResultsObj[indexE].ping}
+              if($scope.originalExecResultsObj[indexE].restart) {resultUrls.restart = $scope.originalExecResultsObj[indexE].restart}
+              if($scope.originalExecResultsObj[indexE].kill) {resultUrls.kill = $scope.originalExecResultsObj[indexE].kill}
+              if($scope.originalExecResultsObj[indexE].pause) {resultUrls.pause = $scope.originalExecResultsObj[indexE].pause}
+              if($scope.originalExecResultsObj[indexE].resume) {resultUrls.resume = $scope.originalExecResultsObj[indexE].resume}
+              $scope.thisExecutionUrl = resultUrls;
+              $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
+            }
+          }
+          //a search counts as a new click
+          $scope.newExecutionClick = false;
+        if(indexE != undefined) {
+          //save the index so when interval runs, it remembers previous index
+          $scope.selectedExecIndex = indexE;
+        }
+      } else {
+        //shift the index the difference of currentExecsLen and executions.executions.length
+        var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
+        $scope.selectedExecIndex = $scope.selectedExecIndex + indexDifference;
+        $scope.previousExecsLen = $scope.executions.executions.length;
+      }
+      // $scope.thisStep = undefined;
+      // $scope.thisTask = undefined;
+      $scope.highlightSelectedExec = function(indexE) {
+        return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
+      };
+      $scope.getThisExecution();
+    };
 
-    // $scope.selectExecutionFullList = function(indexE, results, e) {
-    //   $scope.isSearch = false;
-    //   //set currentExecsLen to executions.executions.length initially
-    //   if(!$scope.previousExecsLen) {
-    //     $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
-    //   }
-    //   //when the interval runs, the index does not become the index anymore so we stored the previous index in $scope.selectedExecIndex
-    //   if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
-    //     indexE = $scope.selectedExecIndex;
-    //   }
-    //   if($scope.previousExecsLen === $scope.executions.executions.length) {
-    //     if ($scope.operationUpdate) {
-    //       //$scope.getSearchExecutionUrls();
-    //       //$scope.thisExecutionUrl = $scope.executionUrls[indexE];
-    //       var operationPause = $scope.thisExecutionUrl['restart'];
-    //       var operationResume = $scope.thisExecutionUrl['restart'];
-    //       var operationForce = $scope.thisExecutionUrl['restart'];
-    //       var operationKill = $scope.thisExecutionUrl['restart'];
-    //       operationPause.replace("restart", "pause");
-    //       operationResume.replace("restart", "resume");
-    //       operationForce.replace("restart", "force");
-    //       operationKill.replace("restart", "kill");
+    $scope.getExecutionsSearch = function(indexE, results, e) {
+      HTTPService.jsonp($scope.serverUrl, function(data) {
+          $scope.executions = data;
+          $scope.getExecutionUrls();
+          $scope.selectExecutionSearchResults(indexE, results, e);
+      });
+    };
 
-    //       if($scope.thisExecutionUrl['pause']) {delete $scope.thisExecutionUrl['pause'];}
-    //       if($scope.thisExecutionUrl['resume']) {delete $scope.thisExecutionUrl['resume'];}
-    //       if($scope.thisExecutionUrl['kill']) {delete $scope.thisExecutionUrl['kill']};
-    //       if($scope.thisExecutionUrl['force']) {delete $scope.thisExecutionUrl['force']};
-    //       //no way to get current operation urls for search results, so building them manually.
-    //       if($scope.executionPing.message.executionDetails.status === 'paused') {
-    //         $scope.thisExecutionUrl['resume'] = operationResume;
-    //       } else if ($scope.executionPing.message.executionDetails.status === 'complete') {
-    //         //only needs restart
-    //       } else if ($scope.executionPing.message.executionDetails.status === 'inProgress') {
-    //         $scope.thisExecutionUrl['pause'] = operationPause;
-    //         $scope.thisExecutionUrl['force'] = operationForce
-    //         $scope.thisExecutionUrl['kill'] = operationKill;
-    //       } else if ($scope.executionPing.message.executionDetails.status === 'errored') {
-    //         //only needs restart
-    //       }
-    //       $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-    //       $scope.operationUpdate = false;
-    //     }else {
-    //       if(indexE !== undefined) {
-    //         if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
-    //           indexE = $scope.selectedExecIndex;
-    //         }
-    //         $scope.thisExecutionUrl = $scope.executionUrls[indexE];
-    //         $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-    //         // }
-    //         if(indexE != undefined) {
-    //           //save the index so when interval runs, it remembers previous index
-    //           $scope.selectedExecIndex = indexE;
-    //         }
-    //       }
-    //     }
-    //     $scope.newExecutionClick = false;
-    //   } else {
-    //     //shift the index the difference of currentExecsLen and executions.executions.length
-    //     var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
-    //     $scope.selectedExecIndex = $scope.selectedExecIndex + indexDifference;
-    //     $scope.previousExecsLen = $scope.executions.executions.length;
-    //   }
-    //   $scope.highlightSelectedExec = function(indexE) {
-    //     return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
-    //   };
-    //   $scope.getThisExecution();
-    // };
+    $scope.getExecutionsFull = function(indexE, results, e) {
+      HTTPService.jsonp($scope.serverUrl, function(data) {
+          $scope.executions = data;
+          $scope.getExecutionUrls();
+          $scope.selectExecutionFullList(indexE, results, e);
+      });
+    };
 
-    // $scope.selectExecutionSearchResults = function(indexE, results, e) {
-    //   $scope.isFullExecutions = false;
-    //   //set currentExecsLen to executions.executions.length initially
-    //   if(!$scope.previousExecsLen) {
-    //     $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
-    //   }
-    //   //when the interval runs, the index does not become the index anymore so we stored the previous index in $scope.selectedExecIndex
-    //   if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
-    //     indexE = $scope.selectedExecIndex;
-    //   }
-    //   if($scope.previousExecsLen === $scope.executions.executions.length) {
-    //       $interval.cancel($scope.getThisExecutionPromise);
-    //       $interval.cancel($scope.getExecutionsSearchPromise);
-    //       if ($scope.operationUpdate) {
-    //         //$scope.getSearchExecutionUrls();
-    //         //$scope.thisExecutionUrl = $scope.executionUrls[indexE];
-    //         var operationPause = $scope.thisExecutionUrl['restart'];
-    //         var operationResume = $scope.thisExecutionUrl['restart'];
-    //         var operationForce = $scope.thisExecutionUrl['restart'];
-    //         var operationKill = $scope.thisExecutionUrl['restart'];
-    //         operationPause.replace("restart", "pause");
-    //         operationResume.replace("restart", "resume");
-    //         operationForce.replace("restart", "force");
-    //         operationKill.replace("restart", "kill");
+    $scope.getExecutionUrls = function() {
+        var justUrls = [];
+        var executionResult = $scope.executions.executions;
+        angular.forEach(executionResult, function(value, key) {
+          //iterate over the key/value pairs of each execution
+          var copyValue = {};
+          if(value.ping) {copyValue.ping = value.ping}
+          if(value.restart) {copyValue.restart = value.restart}
+          if(value.kill) {copyValue.kill = value.kill}
+          if(value.pause) {copyValue.pause = value.pause}
+          if(value.resume) {copyValue.resume = value.resume}
+          if(value.force) {copyValue.force = value.force}
+          justUrls.push(copyValue);
+        });
+        $scope.executionUrls = justUrls;
+    };
 
-    //         if($scope.thisExecutionUrl['pause']) {delete $scope.thisExecutionUrl['pause'];}
-    //         if($scope.thisExecutionUrl['resume']) {delete $scope.thisExecutionUrl['resume'];}
-    //         if($scope.thisExecutionUrl['kill']) {delete $scope.thisExecutionUrl['kill']};
-    //         if($scope.thisExecutionUrl['force']) {delete $scope.thisExecutionUrl['force']};
-    //         //no way to get current operation urls for search results, so building them manually.
-    //         if($scope.executionPing.message.executionDetails.status === 'paused') {
-    //           $scope.thisExecutionUrl['resume'] = operationResume;
-    //         } else if ($scope.executionPing.message.executionDetails.status === 'complete') {
-    //           //only needs restart
-    //         } else if ($scope.executionPing.message.executionDetails.status === 'inProgress') {
-    //           $scope.thisExecutionUrl['pause'] = operationPause;
-    //           $scope.thisExecutionUrl['force'] = operationForce
-    //           $scope.thisExecutionUrl['kill'] = operationKill;
-    //         } else if ($scope.executionPing.message.executionDetails.status === 'errored') {
-    //           //only needs restart
-    //         }
-    //         $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
-    //         $scope.operationUpdate = false;
-    //       } else {
-    //         if(Array.isArray(results)) {
-    //           //create new object of initial results
-    //           //$scope.originalExecResultsObj = angular.copy(results);
-    //           var resultUrls = {};
-    //           if(results[indexE].ping) {resultUrls.ping = results[indexE].ping}
-    //           if(results[indexE].restart) {resultUrls.restart = results[indexE].restart}
-    //           if(results[indexE].kill) {resultUrls.kill = results[indexE].kill}
-    //           if(results[indexE].pause) {resultUrls.pause = results[indexE].pause}
-    //           if(results[indexE].resume) {resultUrls.resume = results[indexE].resume}
-    //           $scope.thisExecutionUrl = resultUrls;
-    //           $scope.executionPingUrl = results[indexE].ping + '?callback=JSON_CALLBACK';
-    //         } else {
-    //           //display original execution list after a search, e= ""
-    //           var resultUrls = {};
-    //           if($scope.originalExecResultsObj[indexE].ping) {resultUrls.ping = $scope.originalExecResultsObj[indexE].ping}
-    //           if($scope.originalExecResultsObj[indexE].restart) {resultUrls.restart = $scope.originalExecResultsObj[indexE].restart}
-    //           if($scope.originalExecResultsObj[indexE].kill) {resultUrls.kill = $scope.originalExecResultsObj[indexE].kill}
-    //           if($scope.originalExecResultsObj[indexE].pause) {resultUrls.pause = $scope.originalExecResultsObj[indexE].pause}
-    //           if($scope.originalExecResultsObj[indexE].resume) {resultUrls.resume = $scope.originalExecResultsObj[indexE].resume}
-    //           $scope.thisExecutionUrl = resultUrls;
-    //           $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
-    //         }
-    //       }
-    //       //a search counts as a new click
-    //       $scope.newExecutionClick = false;
-    //     if(indexE != undefined) {
-    //       //save the index so when interval runs, it remembers previous index
-    //       $scope.selectedExecIndex = indexE;
-    //     }
-    //   } else {
-    //     //shift the index the difference of currentExecsLen and executions.executions.length
-    //     var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
-    //     $scope.selectedExecIndex = $scope.selectedExecIndex + indexDifference;
-    //     $scope.previousExecsLen = $scope.executions.executions.length;
-    //   }
-    //   // $scope.thisStep = undefined;
-    //   // $scope.thisTask = undefined;
-    //   $scope.highlightSelectedExec = function(indexE) {
-    //     return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
-    //   };
-    //   $scope.getThisExecution();
-    // };
-
-    // $scope.getExecutionsSearch = function(indexE, results, e) {
-    //   HTTPService.jsonp($scope.serverUrl, function(data) {
-    //       $scope.executions = data;
-    //       $scope.getExecutionUrls();
-    //       $scope.selectExecutionSearchResults(indexE, results, e);
-    //   });
-    // };
-
-    // $scope.getExecutionsFull = function(indexE, results, e) {
-    //   HTTPService.jsonp($scope.serverUrl, function(data) {
-    //       $scope.executions = data;
-    //       $scope.getExecutionUrls();
-    //       $scope.selectExecutionFullList(indexE, results, e);
-    //   });
-    // };
-
-    // $scope.getExecutionUrls = function() {
+    $scope.getThisExecution = function() {
+      HTTPService.jsonp($scope.executionPingUrl, function(data) {
+          $scope.executionPing = data;
+      });
+    };
+    // $scope.getSearchExecutionUrls = function() {
     //     var justUrls = [];
-    //     var executionResult = $scope.executions.executions;
+    //     var executionResult = $scope.originalExecResultsObj;
     //     angular.forEach(executionResult, function(value, key) {
     //       //iterate over the key/value pairs of each execution
     //       var copyValue = {};
@@ -432,212 +454,190 @@ angular.module('ServerList', ['SharedHTTP'])
     //       if(value.force) {copyValue.force = value.force}
     //       justUrls.push(copyValue);
     //     });
-    //     $scope.executionUrls = justUrls;
+    //     $scope.executionSearchUrls = justUrls;
     // };
 
-    // $scope.getThisExecution = function() {
-    //   HTTPService.jsonp($scope.executionPingUrl, function(data) {
-    //       $scope.executionPing = data;
-    //   });
-    // };
-    // // $scope.getSearchExecutionUrls = function() {
-    // //     var justUrls = [];
-    // //     var executionResult = $scope.originalExecResultsObj;
-    // //     angular.forEach(executionResult, function(value, key) {
-    // //       //iterate over the key/value pairs of each execution
-    // //       var copyValue = {};
-    // //       if(value.ping) {copyValue.ping = value.ping}
-    // //       if(value.restart) {copyValue.restart = value.restart}
-    // //       if(value.kill) {copyValue.kill = value.kill}
-    // //       if(value.pause) {copyValue.pause = value.pause}
-    // //       if(value.resume) {copyValue.resume = value.resume}
-    // //       if(value.force) {copyValue.force = value.force}
-    // //       justUrls.push(copyValue);
-    // //     });
-    // //     $scope.executionSearchUrls = justUrls;
-    // // };
+    $scope.selectOperation = function(event, operationUrl, resultsExec) {
+        $scope.thisOperationUrl = operationUrl + '?callback=JSON_CALLBACK';
+        $scope.performOperation(event, operationUrl, resultsExec);
+    };
 
-    // $scope.selectOperation = function(event, operationUrl, resultsExec) {
-    //     $scope.thisOperationUrl = operationUrl + '?callback=JSON_CALLBACK';
-    //     $scope.performOperation(event, operationUrl, resultsExec);
-    // };
+    $scope.performOperation = function(event, operationUrl, resultsExec) {
+      HTTPService.jsonp($scope.thisOperationUrl, function(data) {
+        //$scope.operationResponse = data;
+        $scope.operationResponse = data;
+        $scope.showOperationResponse(event);
+        $scope.getThisExecution();
+        $scope.operationUpdate = true;
+        if($scope.isSearch === true) {
+          $scope.getExecutionsSearch(undefined, resultsExec, undefined);
+        } else {
+          $scope.getExecutionsFull(undefined, resultsExec, undefined)
+        }
+      });
+    };
 
-    // $scope.performOperation = function(event, operationUrl, resultsExec) {
-    //   HTTPService.jsonp($scope.thisOperationUrl, function(data) {
-    //     //$scope.operationResponse = data;
-    //     $scope.operationResponse = data;
-    //     $scope.showOperationResponse(event);
-    //     $scope.getThisExecution();
-    //     $scope.operationUpdate = true;
-    //     if($scope.isSearch === true) {
-    //       $scope.getExecutionsSearch(undefined, resultsExec, undefined);
-    //     } else {
-    //       $scope.getExecutionsFull(undefined, resultsExec, undefined)
-    //     }
-    //   });
-    // };
+    $scope.showOperationResponse = function(event) {
+      $mdDialog.show({
+        controller: 'OperationResponseModalCtrl',
+        templateUrl: 'serverList/templates/operationResModalCtrl.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          operationResponse: $scope.operationResponse
+        }
+      });
+    };
 
-    // $scope.showOperationResponse = function(event) {
-    //   $mdDialog.show({
-    //     controller: 'OperationResponseModalCtrl',
-    //     templateUrl: 'serverList/templates/operationResModalCtrl.html',
-    //     parent: angular.element(document.body),
-    //     targetEvent: event,
-    //     locals: {
-    //       operationResponse: $scope.operationResponse
-    //     }
-    //   });
-    // };
+    $scope.startStepInterval = function(indexS, results, e) {
+      //kill off existing intervals
+      $interval.cancel($scope.selectStepPromise);
+      $scope.newStepClick = true;
+      $scope.selectStep(indexS, results, e);
+      $scope.selectStepPromise = $interval($scope.selectStep, 15000, false);
+    };
 
-    // $scope.startStepInterval = function(indexS, results, e) {
-    //   //kill off existing intervals
-    //   $interval.cancel($scope.selectStepPromise);
-    //   $scope.newStepClick = true;
-    //   $scope.selectStep(indexS, results, e);
-    //   $scope.selectStepPromise = $interval($scope.selectStep, 15000, false);
-    // };
+    $scope.selectStep = function(indexS, results, s) {
+      if(!$scope.newStepClick && indexS != $scope.selectedStepIndex) {
+        indexS = $scope.selectedStepIndex;
+      }
+      $scope.newStepClick = false;
+      if(results){
+        $scope.thisStep = results[indexS];
+      } else {
+        $scope.thisStep = $scope.executionPing.message.executionDetails.steps[indexS];
+      }
+      //$scope.thisTask = undefined;
+      if(indexS != undefined) {
+        $scope.selectedStepIndex = indexS;
+      }
+      console.log($scope.thisStep);
+      $scope.highlightSelectedStep = function(indexS) {
+        return indexS === $scope.selectedStepIndex ? 'highlight-select' : undefined;
+      };
+    };
 
-    // $scope.selectStep = function(indexS, results, s) {
-    //   if(!$scope.newStepClick && indexS != $scope.selectedStepIndex) {
-    //     indexS = $scope.selectedStepIndex;
-    //   }
-    //   $scope.newStepClick = false;
-    //   if(results){
-    //     $scope.thisStep = results[indexS];
-    //   } else {
-    //     $scope.thisStep = $scope.executionPing.message.executionDetails.steps[indexS];
-    //   }
-    //   //$scope.thisTask = undefined;
-    //   if(indexS != undefined) {
-    //     $scope.selectedStepIndex = indexS;
-    //   }
-    //   console.log($scope.thisStep);
-    //   $scope.highlightSelectedStep = function(indexS) {
-    //     return indexS === $scope.selectedStepIndex ? 'highlight-select' : undefined;
-    //   };
-    // };
+    $scope.getModuleDetails = function(what, event) {
+      var url = 'http://' + $scope.thisServer.message.hostname + '/ping/module/' + this.key + '?callback=JSON_CALLBACK';
+      var d = '';
+      HTTPService.jsonp(url, function(data) {
+        $scope.thisModule = data;
+        if ($scope.thisModule.entityID === "workflowManager") {
+          $scope.thisModule.message.total['queue'] = 'n/a';
+        }
+        d = new Date($scope.thisModule.date);
+        $scope.thisModule.date = d.toString();
+        //$scope.thisModule.date = $scope.thisModule.date.toLocaleString();
+        // var convertedDateString = $scope.thisModule.date.toLocaleString();
+        // convertedDateString = convertedDateString.replace('at ', '');
+        // $scope.thisModule.date = new Date(convertedDateString);
+        $scope.showModuleDetails(what, event);
+      });
+    }
 
-    // $scope.getModuleDetails = function(what, event) {
-    //   var url = 'http://' + $scope.thisServer.message.hostname + '/ping/module/' + this.key + '?callback=JSON_CALLBACK';
-    //   var d = '';
-    //   HTTPService.jsonp(url, function(data) {
-    //     $scope.thisModule = data;
-    //     if ($scope.thisModule.entityID === "workflowManager") {
-    //       $scope.thisModule.message.total['queue'] = 'n/a';
-    //     }
-    //     d = new Date($scope.thisModule.date);
-    //     $scope.thisModule.date = d.toString();
-    //     //$scope.thisModule.date = $scope.thisModule.date.toLocaleString();
-    //     // var convertedDateString = $scope.thisModule.date.toLocaleString();
-    //     // convertedDateString = convertedDateString.replace('at ', '');
-    //     // $scope.thisModule.date = new Date(convertedDateString);
-    //     $scope.showModuleDetails(what, event);
-    //   });
-    // }
+    $scope.showModuleDetails = function(event) {
+      $mdDialog.show({
+        controller: 'ModuleDetailsModalCtrl',
+        templateUrl: 'serverList/templates/moduleDetailsModal.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          thisModule: $scope.thisModule
+        }
+      });
+    };
 
-    // $scope.showModuleDetails = function(event) {
-    //   $mdDialog.show({
-    //     controller: 'ModuleDetailsModalCtrl',
-    //     templateUrl: 'serverList/templates/moduleDetailsModal.html',
-    //     parent: angular.element(document.body),
-    //     targetEvent: event,
-    //     locals: {
-    //       thisModule: $scope.thisModule
-    //     }
-    //   });
-    // };
+    $scope.startTaskInterval = function(event, indexT, results, e) {
+      //kill off existing intervals
+      $interval.cancel($scope.selectTaskPromise);
+      $scope.newTaskClick = true;
+      $scope.showTaskDetails(event, indexT, results, e);
+      $scope.selectTaskPromise = $interval($scope.showTaskDetails, 15000, false);
+    };
 
-    // $scope.startTaskInterval = function(event, indexT, results, e) {
-    //   //kill off existing intervals
-    //   $interval.cancel($scope.selectTaskPromise);
-    //   $scope.newTaskClick = true;
-    //   $scope.showTaskDetails(event, indexT, results, e);
-    //   $scope.selectTaskPromise = $interval($scope.showTaskDetails, 15000, false);
-    // };
+    $scope.showTaskDetails = function(event, indexT, results, t) {
+      if(!$scope.newTaskClick && indexT != $scope.selectedTaskIndex) {
+        indexT = $scope.selectedTaskIndex;
+      }
+      if(results) {
+        $scope.thisTask = results[indexT];
+      } else {
+        $scope.thisTask = $scope.thisStep.tasks[indexT];
+      }
+      //$scope.thisTask = undefined;
+      if(indexT != undefined) {
+        $scope.selectedTaskIndex = indexT;
+      }
+      $scope.highlightSelectedTask = function(event, indexT) {
+        return indexT === $scope.selectedTaskIndex ? 'highlight-select' : undefined;
+      };
+      console.log($scope.thisTask);
+      angular.forEach($scope.thisTask, function(value, key) {
+        if (typeof value === "undefined") {
+          $scope.thisTask[key] = "undefined";
+        } else if (value === null) {
+          $scope.thisTask[key] = "null";
+        }
+      });
+      if(event) {
+        $scope.openTaskModal(event, indexT);
+        $scope.newTaskClick = false;
+      }
+    };
 
-    // $scope.showTaskDetails = function(event, indexT, results, t) {
-    //   if(!$scope.newTaskClick && indexT != $scope.selectedTaskIndex) {
-    //     indexT = $scope.selectedTaskIndex;
-    //   }
-    //   if(results) {
-    //     $scope.thisTask = results[indexT];
-    //   } else {
-    //     $scope.thisTask = $scope.thisStep.tasks[indexT];
-    //   }
-    //   //$scope.thisTask = undefined;
-    //   if(indexT != undefined) {
-    //     $scope.selectedTaskIndex = indexT;
-    //   }
-    //   $scope.highlightSelectedTask = function(event, indexT) {
-    //     return indexT === $scope.selectedTaskIndex ? 'highlight-select' : undefined;
-    //   };
-    //   console.log($scope.thisTask);
-    //   angular.forEach($scope.thisTask, function(value, key) {
-    //     if (typeof value === "undefined") {
-    //       $scope.thisTask[key] = "undefined";
-    //     } else if (value === null) {
-    //       $scope.thisTask[key] = "null";
-    //     }
-    //   });
-    //   if(event) {
-    //     $scope.openTaskModal(event, indexT);
-    //     $scope.newTaskClick = false;
-    //   }
-    // };
+    $scope.openTaskModal = function(event, indexT) {
+      if($scope.newTaskClick === true) {
+        $mdDialog.show({
+          controller: 'TaskStatusModalCtrl',
+          templateUrl: 'serverList/templates/taskStatusModal.html',
+          parent: angular.element(document.body),
+          targetEvent: event,
+          locals: {
+            thisTask: $scope.thisTask,
+          }
+        });
+      }
+    }
 
-    // $scope.openTaskModal = function(event, indexT) {
-    //   if($scope.newTaskClick === true) {
-    //     $mdDialog.show({
-    //       controller: 'TaskStatusModalCtrl',
-    //       templateUrl: 'serverList/templates/taskStatusModal.html',
-    //       parent: angular.element(document.body),
-    //       targetEvent: event,
-    //       locals: {
-    //         thisTask: $scope.thisTask,
-    //       }
-    //     });
-    //   }
-    // }
+    $scope.showSettings = function(event, index) {
+      $mdDialog.show({
+        controller: 'SettingsModalCtrl',
+        templateUrl: 'serverList/templates/settingsModal.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          executionPing: $scope.executionPing
+        }
+      });
+    };
 
-    // $scope.showSettings = function(event, index) {
-    //   $mdDialog.show({
-    //     controller: 'SettingsModalCtrl',
-    //     templateUrl: 'serverList/templates/settingsModal.html',
-    //     parent: angular.element(document.body),
-    //     targetEvent: event,
-    //     locals: {
-    //       executionPing: $scope.executionPing
-    //     }
-    //   });
-    // };
+    $scope.showExecutionFiles = function(event, index) {
+      $mdDialog.show({
+        controller: 'ExecutionFilesCtrl',
+        templateUrl: 'serverList/templates/executionFilesModal.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        locals: {
+          settingsObject: $scope.executionPing.message.executionDetails.settingsObj
+        }
+      });
+    };
 
-    // $scope.showExecutionFiles = function(event, index) {
-    //   $mdDialog.show({
-    //     controller: 'ExecutionFilesCtrl',
-    //     templateUrl: 'serverList/templates/executionFilesModal.html',
-    //     parent: angular.element(document.body),
-    //     targetEvent: event,
-    //     locals: {
-    //       settingsObject: $scope.executionPing.message.executionDetails.settingsObj
-    //     }
-    //   });
-    // };
+    $scope.killTask = function(event, index) {
+      event.stopPropagation();
+      var msg = "Are you sure you want to kill this task?";
+      if( !window.confirm(msg) ){return}
 
-    // $scope.killTask = function(event, index) {
-    //   event.stopPropagation();
-    //   var msg = "Are you sure you want to kill this task?";
-    //   if( !window.confirm(msg) ){return}
+      alert('Kill Task "' + $scope.thisStep.tasks[index].id + '" in Step "' + $scope.thisStep.label + '" in Execution "' + $scope.thisExecution.execId + '"');
+    };
 
-    //   alert('Kill Task "' + $scope.thisStep.tasks[index].id + '" in Step "' + $scope.thisStep.label + '" in Execution "' + $scope.thisExecution.execId + '"');
-    // };
+    $scope.forceTask = function(event, index) {
+      event.stopPropagation();
+      var msg = "Are you sure you want to force this task?";
+      if( !window.confirm(msg) ){return}
 
-    // $scope.forceTask = function(event, index) {
-    //   event.stopPropagation();
-    //   var msg = "Are you sure you want to force this task?";
-    //   if( !window.confirm(msg) ){return}
-
-    //   alert('Force Task "' + $scope.thisStep.tasks[index].id + '" in Step "' + $scope.thisStep.label + '" in Execution "' + $scope.thisExecution.execId + '"');
-    // };
+      alert('Force Task "' + $scope.thisStep.tasks[index].id + '" in Step "' + $scope.thisStep.label + '" in Execution "' + $scope.thisExecution.execId + '"');
+    };
 
   }])
   .controller('OperationResponseModalCtrl',['$scope', '$mdDialog', 'operationResponse',
