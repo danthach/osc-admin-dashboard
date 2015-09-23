@@ -734,115 +734,115 @@ angular.module('ServerList', ['SharedHTTP'])
       };
   }])
 
-  .filter('disable', function() {
-    return function(items, field) {
-      var result = {};
-      angular.forEach(items, function(value, key) {
-        if (key === field) {
-          result[key] = value;
-        }
-      });
-      return result;
-    };
-  })
+  // .filter('disable', function() {
+  //   return function(items, field) {
+  //     var result = {};
+  //     angular.forEach(items, function(value, key) {
+  //       if (key === field) {
+  //         result[key] = value;
+  //       }
+  //     });
+  //     return result;
+  //   };
+  // })
 
-  .filter('with', function() {
-    return function(items, field) {
-      var result = {};
-      angular.forEach(items, function(value, key) {
-        if (key === field) {
-          result[key] = value;
-        }
-      });
-      return result;
-    };
-  })
+  // .filter('with', function() {
+  //   return function(items, field) {
+  //     var result = {};
+  //     angular.forEach(items, function(value, key) {
+  //       if (key === field) {
+  //         result[key] = value;
+  //       }
+  //     });
+  //     return result;
+  //   };
+  // })
 
-  .filter('without', function() {
-    return function(items, field) {
-      var result = {};
+  // .filter('without', function() {
+  //   return function(items, field) {
+  //     var result = {};
 
-      if(items !== undefined) {
-        angular.forEach(items, function(value, key) {
-          if (key !== field) {
-            result[key] = value;
-          }
-        });
-      } else {
-        result = {};
-      }
-      return result;
-    };
-  })
+  //     if(items !== undefined) {
+  //       angular.forEach(items, function(value, key) {
+  //         if (key !== field) {
+  //           result[key] = value;
+  //         }
+  //       });
+  //     } else {
+  //       result = {};
+  //     }
+  //     return result;
+  //   };
+  // })
 
-  .filter('only', function() {
-    return function(items, field) {
-      if(items !== undefined) {
-        if(Object.keys(items).length === 1) {
-          return items;
-        }
-      } else {
-        return {status:'Module not found.'};
-      }
-    }
-  })
+  // .filter('only', function() {
+  //   return function(items, field) {
+  //     if(items !== undefined) {
+  //       if(Object.keys(items).length === 1) {
+  //         return items;
+  //       }
+  //     } else {
+  //       return {status:'Module not found.'};
+  //     }
+  //   }
+  // })
 
-  .filter('keys', function() {
-      return function(input) {
-        if (!input) {
-          return [];
-        }
-        return Object.keys(input);
-      }
-  })
+  // .filter('keys', function() {
+  //     return function(input) {
+  //       if (!input) {
+  //         return [];
+  //       }
+  //       return Object.keys(input);
+  //     }
+  // })
 
-  .filter('secondsToTimeString', function() {
-      //Returns duration from milliseconds in hh:mm:ss format.
-      return function(seconds) {
-        var h = 3600;
-        var m = 60;
-        var hours = Math.floor(seconds/h);
-        var minutes = Math.floor( (seconds % h)/m );
-        var scnds = Math.floor( (seconds % m) );
-        var timeString = '';
-        if(scnds < 10) scnds = "0"+scnds;
-        if(hours < 10) hours = "0"+hours;
-        if(minutes < 10) minutes = "0"+minutes;
-        if (hours == "00") {
-          timeString = minutes +" minutes "+scnds +" seconds";
-        } else {
-          timeString = hours +"h  "+ minutes +"m  "+scnds +"s";
-        }
+  // .filter('secondsToTimeString', function() {
+  //     //Returns duration from milliseconds in hh:mm:ss format.
+  //     return function(seconds) {
+  //       var h = 3600;
+  //       var m = 60;
+  //       var hours = Math.floor(seconds/h);
+  //       var minutes = Math.floor( (seconds % h)/m );
+  //       var scnds = Math.floor( (seconds % m) );
+  //       var timeString = '';
+  //       if(scnds < 10) scnds = "0"+scnds;
+  //       if(hours < 10) hours = "0"+hours;
+  //       if(minutes < 10) minutes = "0"+minutes;
+  //       if (hours == "00") {
+  //         timeString = minutes +" minutes "+scnds +" seconds";
+  //       } else {
+  //         timeString = hours +"h  "+ minutes +"m  "+scnds +"s";
+  //       }
 
-        return timeString;
-      }
-  })
+  //       return timeString;
+  //     }
+  // })
 
-  .filter('dateString', function($filter) {
-    return function(date) {
-      if(date) {
-        var dateOut = new Date(date);
-        var dateOut = $filter('date')(dateOut, 'medium')
-      } else {
-        var dateOut = 'n/a';
-      }
-      return dateOut;
-    }
-  })
+  // .filter('dateString', function($filter) {
+  //   return function(date) {
+  //     if(date) {
+  //       var dateOut = new Date(date);
+  //       var dateOut = $filter('date')(dateOut, 'medium')
+  //     } else {
+  //       var dateOut = 'n/a';
+  //     }
+  //     return dateOut;
+  //   }
+  // })
 
-  .filter('prettyJSON', function () {
-    return function (json) {
-      var readable = JSON.stringify(json, null, '    ');
-      return readable;
-    }
-  })
+  // .filter('prettyJSON', function () {
+  //   return function (json) {
+  //     var readable = JSON.stringify(json, null, '    ');
+  //     return readable;
+  //   }
+  // })
 
-  .directive('serverList', function() {
-    return {
-       scope: {},
-       templateUrl: 'serverList/templates/serverListTpl.html',
-       replace: true,
-       controller: 'ServerListCtrl',
-       controllerAs: 'serverListCtrl'
-    };
-});
+  // .directive('serverList', function() {
+  //   return {
+  //      scope: {},
+  //      templateUrl: 'serverList/templates/serverListTpl.html',
+  //      replace: true,
+  //      controller: 'ServerListCtrl',
+  //      controllerAs: 'serverListCtrl'
+  //   };
+  // });
