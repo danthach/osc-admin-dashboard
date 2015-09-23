@@ -542,6 +542,9 @@ table th[class*="col-"] {
   }
 }
 
+#module-details-modal .md-default-theme {
+  box-shadow: none;
+}
 button .ng-scope a.ng-binding {color:white; text-decoration: none;}
 /*.md-content-overflow {overflow: hidden;}*/
 

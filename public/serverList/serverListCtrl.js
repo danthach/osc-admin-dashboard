@@ -175,6 +175,11 @@ angular.module('ServerList', ['SharedHTTP'])
       $interval.cancel($scope.selectTaskPromise);
       $scope.highlightSelectedTask = undefined;
       $scope.highlightSelectedStep = undefined;
+      $scope.highlightSelectedExec = '';
+      $scope.highlightSelectedTask = '';
+      $scope.highlightSelectedStep = '';
+      $scope.executionPing = '';
+      $scope.thisStep = '';
       $scope.newExecutionClick = true;
       //determine whether we are selecting from a full list or search result list
       if(e) {
@@ -207,6 +212,7 @@ angular.module('ServerList', ['SharedHTTP'])
       $interval.cancel($scope.getThisExecutionPromise);
       $interval.cancel($scope.getExecutionsSearchPromise);
       $interval.cancel($scope.getExecutionsFullPromise);
+      $interval.cancel($scope.getExecutionsFullInitialPromise);
       $interval.cancel($scope.selectStepPromise);
     };
 
