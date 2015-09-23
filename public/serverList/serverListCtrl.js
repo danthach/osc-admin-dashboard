@@ -168,7 +168,7 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.startExecutionInterval = function(indexE, resultsExec, e) {
       //kill off existing intervals
       $interval.cancel($scope.getThisExecutionPromise);
-      $interval.cancel($scope.getExecutionsFullInitialPromise);
+      //$interval.cancel($scope.getExecutionsFullInitialPromise);
       $interval.cancel($scope.getExecutionsSearchPromise);
       $interval.cancel($scope.getExecutionsFullPromise);
       $interval.cancel($scope.selectStepPromise);
@@ -247,32 +247,56 @@ angular.module('ServerList', ['SharedHTTP'])
       if(!$scope.previousExecsLen) {
         $scope.previousExecsLen = angular.copy($scope.executions.executions).length;
       }
+      //when the interval runs, the index does not become the index anymore so we stored the previous index in $scope.selectedExecIndex
+      if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
+        indexE = $scope.selectedExecIndex;
+      }
       if($scope.previousExecsLen === $scope.executions.executions.length) {
-        if(indexE !== undefined) {
-          if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
-            indexE = $scope.selectedExecIndex;
+        if ($scope.operationUpdate) {
+          //$scope.getSearchExecutionUrls();
+          //$scope.thisExecutionUrl = $scope.executionUrls[indexE];
+          var operationPause = $scope.thisExecutionUrl['restart'];
+          var operationResume = $scope.thisExecutionUrl['restart'];
+          var operationForce = $scope.thisExecutionUrl['restart'];
+          var operationKill = $scope.thisExecutionUrl['restart'];
+          operationPause.replace("restart", "pause");
+          operationResume.replace("restart", "resume");
+          operationForce.replace("restart", "force");
+          operationKill.replace("restart", "kill");
+
+          if($scope.thisExecutionUrl['pause']) {delete $scope.thisExecutionUrl['pause'];}
+          if($scope.thisExecutionUrl['resume']) {delete $scope.thisExecutionUrl['resume'];}
+          if($scope.thisExecutionUrl['kill']) {delete $scope.thisExecutionUrl['kill']};
+          if($scope.thisExecutionUrl['force']) {delete $scope.thisExecutionUrl['force']};
+          //no way to get current operation urls for search results, so building them manually.
+          if($scope.executionPing.message.executionDetails.status === 'paused') {
+            $scope.thisExecutionUrl['resume'] = operationResume;
+          } else if ($scope.executionPing.message.executionDetails.status === 'complete') {
+            //only needs restart
+          } else if ($scope.executionPing.message.executionDetails.status === 'inProgress') {
+            $scope.thisExecutionUrl['pause'] = operationPause;
+            $scope.thisExecutionUrl['force'] = operationForce
+            $scope.thisExecutionUrl['kill'] = operationKill;
+          } else if ($scope.executionPing.message.executionDetails.status === 'errored') {
+            //only needs restart
           }
-          $scope.newExecutionClick = false;
-          // if(!$scope.executionPingUrl && e !== "") {
-          //   if($scope.executionUrls) {
-          //     //user clicks search but doesn't enter any value in field
-          //     $scope.thisExecutionUrl = $scope.executionUrls[indexE];
-          //     $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-          //   } else {
-          //     // $scope.thisExecutionUrl = executionUrls[indexE];
-          //     // $scope.executionPingUrl = executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-          //   }
-          // } else {
-              //after a search, interval runs, which doesn't return indexE, result, or e
-              //$scope.getExecutionUrls();
-          $scope.thisExecutionUrl = $scope.executionUrls[indexE];
           $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
-          // }
-          if(indexE != undefined) {
-            //save the index so when interval runs, it remembers previous index
-            $scope.selectedExecIndex = indexE;
+          $scope.operationUpdate = false;
+        }else {
+          if(indexE !== undefined) {
+            if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
+              indexE = $scope.selectedExecIndex;
+            }
+            $scope.thisExecutionUrl = $scope.executionUrls[indexE];
+            $scope.executionPingUrl = $scope.executionUrls[indexE].ping + '?callback=JSON_CALLBACK';
+            // }
+            if(indexE != undefined) {
+              //save the index so when interval runs, it remembers previous index
+              $scope.selectedExecIndex = indexE;
+            }
           }
         }
+        $scope.newExecutionClick = false;
       } else {
         //shift the index the difference of currentExecsLen and executions.executions.length
         var indexDifference = $scope.executions.executions.length - $scope.previousExecsLen;
@@ -295,9 +319,6 @@ angular.module('ServerList', ['SharedHTTP'])
       if(!$scope.newExecutionClick && indexE != $scope.selectedExecIndex) {
         indexE = $scope.selectedExecIndex;
       }
-      // if(!results) {
-      //   results = $scope.originalExecResultsObj;
-      // }
       if($scope.previousExecsLen === $scope.executions.executions.length) {
           $interval.cancel($scope.getThisExecutionPromise);
           $interval.cancel($scope.getExecutionsSearchPromise);
@@ -354,9 +375,9 @@ angular.module('ServerList', ['SharedHTTP'])
               $scope.thisExecutionUrl = resultUrls;
               $scope.executionPingUrl = $scope.originalExecResultsObj[indexE].ping + '?callback=JSON_CALLBACK';
             }
-            //a search counts as a new click
-            $scope.newExecutionClick = false;
           }
+          //a search counts as a new click
+          $scope.newExecutionClick = false;
         if(indexE != undefined) {
           //save the index so when interval runs, it remembers previous index
           $scope.selectedExecIndex = indexE;
@@ -437,16 +458,16 @@ angular.module('ServerList', ['SharedHTTP'])
 
     $scope.performOperation = function(event, operationUrl, resultsExec) {
       HTTPService.jsonp($scope.thisOperationUrl, function(data) {
-          //$scope.operationResponse = data;
-          $scope.operationResponse = data;
-          $scope.showOperationResponse(event);
-          $scope.getThisExecution();
-          $scope.operationUpdate = true;
-          if($scope.isSearch === true) {
-            $scope.getExecutionsSearch(undefined, resultsExec, undefined);
-          } else {
-            $scope.getExecutionsFull(undefined, resultsExec, undefined)
-          }
+        //$scope.operationResponse = data;
+        $scope.operationResponse = data;
+        $scope.showOperationResponse(event);
+        $scope.getThisExecution();
+        $scope.operationUpdate = true;
+        if($scope.isSearch === true) {
+          $scope.getExecutionsSearch(undefined, resultsExec, undefined);
+        } else {
+          $scope.getExecutionsFull(undefined, resultsExec, undefined)
+        }
       });
     };
 
@@ -532,7 +553,6 @@ angular.module('ServerList', ['SharedHTTP'])
       if(!$scope.newTaskClick && indexT != $scope.selectedTaskIndex) {
         indexT = $scope.selectedTaskIndex;
       }
-      $scope.newTaskClick = false;
       if(results) {
         $scope.thisTask = results[indexT];
       } else {
@@ -554,21 +574,25 @@ angular.module('ServerList', ['SharedHTTP'])
         }
       });
       if(event) {
-        $scope.openTaskModal(event);
+        $scope.openTaskModal(event, indexT);
+        $scope.newTaskClick = false;
       }
     };
 
-    $scope.openTaskModal = function(event) {
-      $mdDialog.show({
-        controller: 'TaskStatusModalCtrl',
-        templateUrl: 'serverList/templates/taskStatusModal.html',
-        parent: angular.element(document.body),
-        targetEvent: event,
-        locals: {
-          thisTask: $scope.thisTask
-        }
-      });
+    $scope.openTaskModal = function(event, indexT) {
+      if($scope.newTaskClick === true) {
+        $mdDialog.show({
+          controller: 'TaskStatusModalCtrl',
+          templateUrl: 'serverList/templates/taskStatusModal.html',
+          parent: angular.element(document.body),
+          targetEvent: event,
+          locals: {
+            thisTask: $scope.thisTask,
+          }
+        });
+      }
     }
+
     $scope.showSettings = function(event, index) {
       $mdDialog.show({
         controller: 'SettingsModalCtrl',
