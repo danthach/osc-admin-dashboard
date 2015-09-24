@@ -312,6 +312,7 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.highlightSelectedExec = function(indexE) {
         return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
       };
+      $scope.blah = { startTime: new Date().getTime() };
       $scope.getThisExecution();
     };
 
@@ -416,6 +417,8 @@ angular.module('ServerList', ['SharedHTTP'])
           $scope.getExecutionUrls();
           $scope.selectExecutionFullList(indexE, results, e);
       });
+      $scope.blah.endTime = new Date().getTime();
+      console.log( '### call took ' + (($scope.blah.endTime - $scope.blah.startTime) / 1000) + ' seconds' );
     };
 
     $scope.getExecutionUrls = function() {
