@@ -263,6 +263,9 @@ i {
     width: 1170px;
   }
 }
+.clear {
+  clear: both;
+}
 .clearfix:after,
 .dl-horizontal dd:after,
 .container:after,
@@ -547,6 +550,16 @@ table th[class*="col-"] {
 }
 button .ng-scope a.ng-binding {color:white; text-decoration: none;}
 /*.md-content-overflow {overflow: hidden;}*/
+.bottomsheetTabNav md-button {
+  float:left;
+  margin:0px 4px 0px 4px;
+}
+.bottomsheetTabNav md-button a {
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+}
 
 @media all and (-ms-high-contrast:none) {
 /*  .md-toolbar { display: -ms-flexbox; }*/ /* IE10 */

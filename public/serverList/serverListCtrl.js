@@ -158,6 +158,10 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.executionUrls = executionUrls;
     $scope.theFilter = null;
 
+    $scope.toggleLink = function (){
+          $scope.toggleTab = !$scope.toggleTab;
+    };
+
     $scope.getExecutionsFullInitial = function(indexE, results, e) {
       HTTPService.jsonp($scope.serverUrl, function(data) {
           $scope.executions = data;
@@ -841,6 +845,7 @@ angular.module('ServerList', ['SharedHTTP'])
     return {
        scope: {},
        templateUrl: 'serverList/templates/serverListTpl.html',
+       restrict: 'E',
        replace: true,
        controller: 'ServerListCtrl',
        controllerAs: 'serverListCtrl'

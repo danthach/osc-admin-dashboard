@@ -15,8 +15,13 @@
 		</div>
 		<div flex="100">
 		  <md-content id="modules-tabs" class="md-padding">
-		    <md-tabs md-dynamic-height md-border-bottom>
-		      <md-tab label="modules">
+		    <div>
+		    	<div class="bottomsheetTabNav">
+		    		<md-button ng-click="toggleLink()">Modules</md-button>
+		    		<md-button ng-click="toggleLink()">Executions</md-button>
+		    		<div class="clear"></div>
+		    	</div>
+		      <div ng-show="!toggleTab" label="modules">
 		      	<md-content layout="row" layout-wrap>
 			      	<div flex="20" ng-repeat="(key, value) in modules">
 						  	<md-card class="module-status-card" ng-click="getModuleDetails($event);">
@@ -27,8 +32,8 @@
 						    </md-card>
 							</div>
 						</md-content>
-		      </md-tab>
-		      <md-tab label="executions">
+		      </div>
+		      <div ng-show="toggleTab" label="executions">
 		      	<md-content layout="row" layout-wrap>
 		      		<div flex="33">
 					  	<md-card class="exec-list" ng-click="serverListCtrl.showBottomSheet($event, indexExec)">
@@ -160,8 +165,8 @@
 
 					</div>
 			    </md-content>
-		      </md-tab>
-		    </md-tabs>
+		      </div>
+		    </div>
 		  </md-content>
 		</div>
 	</div>
