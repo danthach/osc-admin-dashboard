@@ -837,12 +837,12 @@ angular.module('ServerList', ['SharedHTTP'])
   //   }
   // })
 
-  // .directive('serverList', function() {
-  //   return {
-  //      scope: {},
-  //      templateUrl: 'serverList/templates/serverListTpl.html',
-  //      replace: true,
-  //      controller: 'ServerListCtrl',
-  //      controllerAs: 'serverListCtrl'
-  //   };
-  // });
+  .directive('serverList', function() {
+    return {
+       scope: {},
+       templateUrl: 'serverList/templates/serverListTpl.html',
+       replace: true,
+       controller: 'ServerListCtrl',
+       controllerAs: 'serverListCtrl'
+    };
+  });
