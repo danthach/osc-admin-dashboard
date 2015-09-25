@@ -157,7 +157,22 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.executions = executions;
     $scope.executionUrls = executionUrls;
     $scope.theFilter = null;
-    
+
+    $scope.getServerData = function() {
+      var url = 'http://' + $scope.thisServer.message.hostname + '/ping/server/irrelevent/verbose?callback=JSON_CALLBACK';
+      HTTPService.jsonpServer(url, function(data){
+        $scope.serverData = data;
+        // var messageObj = {};
+        // var hostname = {hostname : thisServer.DNSName};
+        // messageObj.message = hostname;
+        // messageObj.message['status'] = 'e-offline';
+        // var truncHostname = $scope.thisServer.DNSName.split(".")[0];
+        // messageObj['hostname'] = truncHostname;
+        // messageObj.roles = $scope.thisServer.roles;
+        // messageObj.ip = $scope.thisServer.ip;
+      });
+    }
+
     $scope.toggleLink = function (){
           $scope.toggleTab = !$scope.toggleTab;
     };
@@ -186,6 +201,7 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.executionPing = '';
       $scope.thisStep = '';
       $scope.newExecutionClick = true;
+      $scope.getServerPromise = $interval($scope.getServerData, 30000, true);
       //determine whether we are selecting from a full list or search result list
       if(e) {
         if(Array.isArray(resultsExec)){
