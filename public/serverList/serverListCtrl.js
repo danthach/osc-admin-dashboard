@@ -157,13 +157,14 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.executions = executions;
     $scope.executionUrls = executionUrls;
     $scope.theFilter = null;
-
+    
     $scope.toggleLink = function (){
           $scope.toggleTab = !$scope.toggleTab;
     };
 
     $scope.getExecutionsFullInitial = function(indexE, results, e) {
       HTTPService.jsonp($scope.serverUrl, function(data) {
+          console.log('this is the initial refresh');
           $scope.executions = data;
           $scope.getExecutionUrls();
       });
@@ -172,7 +173,7 @@ angular.module('ServerList', ['SharedHTTP'])
     $scope.startExecutionInterval = function(indexE, resultsExec, e) {
       //kill off existing intervals
       $interval.cancel($scope.getThisExecutionPromise);
-      //$interval.cancel($scope.getExecutionsFullInitialPromise);
+      $interval.cancel($scope.getExecutionsFullInitialPromise);
       $interval.cancel($scope.getExecutionsSearchPromise);
       $interval.cancel($scope.getExecutionsFullPromise);
       $interval.cancel($scope.selectStepPromise);
@@ -212,7 +213,6 @@ angular.module('ServerList', ['SharedHTTP'])
 
     $scope.closeBottomSheet = function() {
       $mdBottomSheet.hide();
-      // $interval.cancel($scope.selectExecutionPromise);
       $interval.cancel($scope.getThisExecutionPromise);
       $interval.cancel($scope.getExecutionsSearchPromise);
       $interval.cancel($scope.getExecutionsFullPromise);
@@ -239,6 +239,7 @@ angular.module('ServerList', ['SharedHTTP'])
 
     $scope.showExecSearch = function() {
       $scope.reasonForSearch = !$scope.reasonForSearch;
+      $interval.cancel($scope.getExecutionsFullInitialPromise);
       $interval.cancel($scope.getExecutionsSearchPromise);
       $interval.cancel($scope.getExecutionsFullPromise);
       $interval.cancel($scope.getThisExecutionPromise);
@@ -316,6 +317,7 @@ angular.module('ServerList', ['SharedHTTP'])
       $scope.highlightSelectedExec = function(indexE) {
         return indexE === $scope.selectedExecIndex ? 'highlight-select' : undefined;
       };
+      $scope.blah.startTime = new Date().getTime();
       $scope.getThisExecution();
     };
 
@@ -416,10 +418,13 @@ angular.module('ServerList', ['SharedHTTP'])
 
     $scope.getExecutionsFull = function(indexE, results, e) {
       HTTPService.jsonp($scope.serverUrl, function(data) {
+          console.log('this is a selected exec refresh');
           $scope.executions = data;
           $scope.getExecutionUrls();
           $scope.selectExecutionFullList(indexE, results, e);
       });
+      $scope.blah.endTime = new Date().getTime();
+      console.log((('### time between intervals' + $scope.blah.endTime - $scope.blah.startTime) / 1000) + ' seconds' );
     };
 
     $scope.getExecutionUrls = function() {
