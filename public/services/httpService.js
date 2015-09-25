@@ -26,6 +26,7 @@ angular.module('SharedHTTP', [])
     },
 
     jsonpExec: function(url, callback) {
+        var blah = { startTime: new Date().getTime() };
         //time out the request after 3 mins
         var timeoutPromise = $timeout( function() {
           canceler.resolve();
@@ -34,6 +35,8 @@ angular.module('SharedHTTP', [])
         var canceler = $q.defer();
         $http.jsonp(url, {timeout: canceler.promise}).
         success(function(data) {
+          blah.endTime = new Date().getTime();
+          console.log( '### call took ' + ((blah.endTime - blah.startTime) / 1000) + ' seconds' );
           $timeout.cancel(timeoutPromise);
           console.log(data);
           callback(data);
