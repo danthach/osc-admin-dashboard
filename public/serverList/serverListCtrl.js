@@ -236,11 +236,6 @@ angular.module('ServerList', ['SharedHTTP'])
       $interval.cancel($scope.selectStepPromise);
     };
 
-    // $scope.searchFilter = function (execution) {
-    //   var executionID = new RegExp($scope.theFilter, 'i');
-    //   return !$scope.theFilter || keyword.test(id.executionID);
-    // };
-
     $scope.moduleStatusImg = function(indexModule) {
         if(this.value === 'warn'){
           return { "background": "url(img/server-warn-sm.png) no-repeat", "background-size": "cover" };
@@ -462,22 +457,6 @@ angular.module('ServerList', ['SharedHTTP'])
           $scope.executionPing = data;
       });
     };
-    // $scope.getSearchExecutionUrls = function() {
-    //     var justUrls = [];
-    //     var executionResult = $scope.originalExecResultsObj;
-    //     angular.forEach(executionResult, function(value, key) {
-    //       //iterate over the key/value pairs of each execution
-    //       var copyValue = {};
-    //       if(value.ping) {copyValue.ping = value.ping}
-    //       if(value.restart) {copyValue.restart = value.restart}
-    //       if(value.kill) {copyValue.kill = value.kill}
-    //       if(value.pause) {copyValue.pause = value.pause}
-    //       if(value.resume) {copyValue.resume = value.resume}
-    //       if(value.force) {copyValue.force = value.force}
-    //       justUrls.push(copyValue);
-    //     });
-    //     $scope.executionSearchUrls = justUrls;
-    // };
 
     $scope.selectOperation = function(event, operationUrl, resultsExec) {
         $scope.thisOperationUrl = operationUrl + '?callback=JSON_CALLBACK';
